@@ -2,6 +2,7 @@ import 'package:algerie_telecom_pointage/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:algerie_telecom_pointage/screens/profile_settings.dart';
 import 'package:algerie_telecom_pointage/screens/profile_editing.dart';
+import 'package:algerie_telecom_pointage/screens/login.dart';
 
 
 void main() {
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         primaryColor: Colors.blue,
       ),
-      home: ProfileScreen(),
+      home: ProfileEditingScreen(),
     );
   }
 }

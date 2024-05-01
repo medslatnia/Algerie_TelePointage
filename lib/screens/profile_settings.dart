@@ -147,7 +147,9 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             size: kSpacingUnit.w * 2.5,
                             color: Colors.black,
                           ),
+                          
                         ],
+                        
                       ),
                     ),
 
