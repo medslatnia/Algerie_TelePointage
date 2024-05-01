@@ -4,6 +4,8 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../constants.dart';
 import 'profile_editing.dart';
 import 'login.dart';
+import 'home.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -29,7 +31,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
+              MaterialPageRoute(builder: (context) => HomeScreen()),
             );
           },
         ),

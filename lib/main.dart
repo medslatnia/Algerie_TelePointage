@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:algerie_telecom_pointage/screens/profile_settings.dart';
 import 'package:algerie_telecom_pointage/screens/profile.dart';
 import 'package:algerie_telecom_pointage/screens/login.dart';
+import 'screens/notifications.dart';
+import 'screens/home.dart';
 
 
 void main() {
@@ -16,11 +18,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'AT Pointage',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: Colors.blue,
-      ),
-      home: ProfileEditingScreen(),
+      theme:
+        ThemeData.from(colorScheme: ColorScheme.light().copyWith(
+          background: Color.fromRGBO(238, 238, 238, 1), // Set the background color
+        )),
+
+      home: LoginScreen(),
     );
   }
 }

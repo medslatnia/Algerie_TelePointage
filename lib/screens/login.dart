@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -144,8 +145,10 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            // Form is valid, proceed with form submission or other actions
-                            return null; // Placeholder, replace with your actual logic
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => HomeScreen()),
+                            );
                           }
                         },
 
