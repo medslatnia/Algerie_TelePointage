@@ -11,92 +11,148 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
+  bool isObscurePassword = true;
   @override
-  Widget build(BuildContext context) {
-    TextStyle? textStyle = Theme
-        .of(context)
-        .textTheme
-        .headline6;
-    ScreenUtil.init(
-      context,
-      designSize: Size(340, 700),
-      minTextAdapt: true,
-    );
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Color.fromRGBO(37, 86, 162, 1),
-      ),
-
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: kSpacingUnit.w * 2),
-        child: Column(
-          children: <Widget>[
-            SizedBox(height: kSpacingUnit.w * 3),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(width: kSpacingUnit.w * 2),
-                //Icon(
-                //LineAwesomeIcons.arrow_left,
-                //size: ScreenUtil().setSp(kSpacingUnit.w * 3),
-                //),
-                Expanded(
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: kSpacingUnit.w * 15,
-                        backgroundImage: AssetImage('assets/images/avatar.png'),
-                      ),
-                      SizedBox(height: kSpacingUnit.w*2),
-                      Text('Mohammed SLATNIA', style: kTitleTextStyle),
-                      SizedBox(height: kSpacingUnit.w*2),
-
-                      ElevatedButton(
-                        onPressed: () {
-                          // Handle button tap
-                          // Add your code here to define what happens when the button is tapped
-                          // For example, navigate to another screen, update state, etc.
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(
-                            vertical: kSpacingUnit.w * 1.5,
-                            horizontal: kSpacingUnit.w * 12.5,
-                          ),
-                          primary: Color.fromRGBO(0, 170, 91, 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(kSpacingUnit.w * 0.8),
-                          ),
-                        ),
-                        child: Text(
-                          'Modifier',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-
-                      SizedBox(height: kSpacingUnit.w * 2),
-                      Text(
-                        'Nom: Mohammed SLATNIA',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: kSpacingUnit.w * 1),
-                      Text(
-                        'Email: example@gmail.com',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+  Widget build(BuildContext context) { return
+        Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "Paramètres",
+              style: TextStyle(color: Colors.white),
             ),
-          ],
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              color: Colors.white,
+              onPressed: () {
+
+              },
+            ),
+            backgroundColor: Color.fromRGBO(37, 86, 162, 1),
+          ),
+
+          body:
+          Container(
+            padding: EdgeInsets.only(left: 15, top: 20, right: 15),
+            child: GestureDetector(
+              onTap:(){
+                FocusScope.of(context).unfocus();
+              },
+              child: ListView(
+                children: [
+                  Center(
+                    child: Stack(
+                      children:[
+                        Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            border: Border.all(width:2, color: Colors.grey),
+                            boxShadow:[
+                              BoxShadow(
+                                spreadRadius: 2,
+                                blurRadius: 10,
+                                color: Colors.black.withOpacity(0.1)
+                              )
+                            ],
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/avatar.png'),
+                            )
+                          ),
+                        ),
+                        Positioned(
+                            bottom: 00,
+                            right: 00,
+                            child: Container(
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  width:4,
+                                  color:Colors.white,
+                                ),
+                                color: Colors.grey,
+                              ),
+                              child: Icon(
+                                Icons.edit,
+                                color: Colors.white,
+                              ),
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height:30),
+                  buildTextField("Nom", "Med", false),
+                  buildTextField("Email", "Med90@gmail.com", false),
+                  buildTextField("Numéro de téléphone", "0589134785", false),
+                  buildTextField("Mot de passe", "*******", true),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {},
+                      child: Text("Annuler",
+                        style: TextStyle(
+                          fontSize: 15,
+                          letterSpacing:2,
+                          color:Colors.black
+                      ),),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 50),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                      ),
+                    ),
+                    ElevatedButton(onPressed: (){},
+                        child: Text("Sauvegarder", style: TextStyle(
+                            fontSize: 15,
+                          letterSpacing: 2,
+                          color: Colors.white
+                      )),
+                    style: ElevatedButton.styleFrom(
+                    primary: Color(0xFF00AA5B),
+                      padding: EdgeInsets.symmetric(horizontal: 45),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)))
+
+                    )
+
+
+                  ],)
+                ],
+              ) ,
+            ),
+          ),
+
+
+
+        );
+  }
+
+  Widget buildTextField(String labelText, String placeholder, bool isPasswordTextField){
+    return Padding(
+      padding: EdgeInsets.only(bottom: 30),
+      child: TextField(
+        obscureText: isPasswordTextField ? true : false,
+        decoration: InputDecoration(
+          suffixIcon: isPasswordTextField?
+              IconButton(
+                icon: Icon(Icons.remove_red_eye, color: Colors.grey),
+                onPressed:(){}
+              ):null,
+          contentPadding: EdgeInsets.only(bottom:5),
+          labelText: labelText,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          hintText: placeholder,
+          hintStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color:Colors.grey,
+          )
         ),
       ),
     );
   }
+
 }

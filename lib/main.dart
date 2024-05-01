@@ -15,12 +15,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Algérie TelePointage',
+      title: 'AT Pointage',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: Colors.blue,
       ),
-      home: ProfileEditingScreen(),
+      home: ProfileScreen(),
     );
   }
 }
