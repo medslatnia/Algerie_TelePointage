@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../constants.dart';
+import 'package:algerie_telecom_pointage/screens/profile.dart';
 
 class ProfileEditingScreen extends StatefulWidget {
   @override
@@ -11,83 +12,156 @@ class ProfileEditingScreen extends StatefulWidget {
 }
 
 class ProfileEditingScreenState extends State<ProfileEditingScreen> {
+  bool isObscurePassword = true;
   @override
-  Widget build(BuildContext context) {
-    TextStyle? textStyle = Theme
-        .of(context)
-        .textTheme
-        .headline6;
-    ScreenUtil.init(
-      context,
-      designSize: Size(340, 700),
-      minTextAdapt: true,
-    );
+  Widget build(BuildContext context) { return
+        Scaffold(
+          appBar: AppBar(
+            title: Text(
+              "Modifier son profil",
+              style: TextStyle(color: Colors.white),
+            ),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfileScreen()),
+                );
+              },
+            ),
+            backgroundColor: Color.fromRGBO(37, 86, 162, 1),
+          ),
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Settings",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Color.fromRGBO(37, 86, 162, 1),
-      ),
-
-      body: Column(
-        children: <Widget>[
-          SizedBox(height: kSpacingUnit.w * 3),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(width: kSpacingUnit.w * 2),
-              //Icon(
-              //LineAwesomeIcons.arrow_left,
-              //size: ScreenUtil().setSp(kSpacingUnit.w * 3),
-              //),
-              Expanded(
-                child: Column(
-                  children: [
-                    Container(
-                      height: kSpacingUnit.w * 13,
-                      width: kSpacingUnit.w * 13,
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: CircleAvatar(
-                              radius: kSpacingUnit.w * 15,
-                              backgroundImage: AssetImage(
-                                  'assets/images/avatar.png'),
-                            ),
+          body:
+          Container(
+            padding: EdgeInsets.only(left: 15, top: 20, right: 15),
+            child: GestureDetector(
+              onTap:(){
+                FocusScope.of(context).unfocus();
+              },
+              child: ListView(
+                children: [
+                  Center(
+                    child: Stack(
+                      children:[
+                        Container(
+                          width: 150,
+                          height: 150,
+                          decoration: BoxDecoration(
+                            border: Border.all(width:2, color: Colors.grey),
+                            boxShadow:[
+                              BoxShadow(
+                                spreadRadius: 2,
+                                blurRadius: 10,
+                                color: Colors.black.withOpacity(0.1)
+                              )
+                            ],
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/avatar.png'),
+                            )
                           ),
-                          Align(
-                            alignment: Alignment.bottomRight,
+                        ),
+                        Positioned(
+                            bottom: 00,
+                            right: 00,
                             child: Container(
-                              height: kSpacingUnit.w * 2.5,
-                              width: kSpacingUnit.w * 2.5,
-                              margin: EdgeInsets.only(top: kSpacingUnit.w * 7),
+                              height: 40,
+                              width: 40,
                               decoration: BoxDecoration(
-                                color: Theme
-                                    .of(context)
-                                    .hintColor,
                                 shape: BoxShape.circle,
+                                border: Border.all(
+                                  width:4,
+                                  color:Colors.white,
+                                ),
+                                color: Colors.grey,
                               ),
                               child: Icon(
-                                LineAwesomeIcons.pen,
-                                color: kDarkPrimaryColor,
-                                size: ScreenUtil().setSp(kSpacingUnit.w * 2),
+                                Icons.edit,
+                                color: Colors.white,
                               ),
-                            ),
-                          ),
-                        ],
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height:30),
+                  buildTextField("Nom", "Ramy BENSID", false),
+                  buildTextField("Email", "RamyB90@gmail.com", false),
+                  buildTextField("Numéro de téléphone", "0589134785", false),
+                  buildTextField("Mot de passe", "*******", true),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ProfileScreen()),
+                        );
+                      },
+                      child: Text("Annuler",
+                        style: TextStyle(
+                          fontSize: 15,
+                          letterSpacing:2,
+                          color:Colors.black
+                      ),),
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 50),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ],
+                    ElevatedButton(onPressed: (){},
+                        child: Text("Sauvegarder", style: TextStyle(
+                            fontSize: 15,
+                          letterSpacing: 2,
+                          color: Colors.white
+                      )),
+                    style: ElevatedButton.styleFrom(
+                    primary: Color(0xFF00AA5B),
+                      padding: EdgeInsets.symmetric(horizontal: 45),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)))
+
+                    )
+
+
+                  ],)
+                ],
+              ) ,
+            ),
           ),
-        ],
+
+
+
+        );
+  }
+
+  Widget buildTextField(String labelText, String placeholder, bool isPasswordTextField){
+    return Padding(
+      padding: EdgeInsets.only(bottom: 30),
+      child: TextField(
+        obscureText: isPasswordTextField ? true : false,
+        decoration: InputDecoration(
+          suffixIcon: isPasswordTextField?
+              IconButton(
+                icon: Icon(Icons.remove_red_eye, color: Colors.grey),
+                onPressed:(){}
+              ):null,
+          contentPadding: EdgeInsets.only(bottom:5),
+          labelText: labelText,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          hintText: placeholder,
+          hintStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color:Colors.grey,
+          )
+        ),
       ),
     );
   }
+
 }
