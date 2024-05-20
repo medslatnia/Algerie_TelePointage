@@ -14,10 +14,7 @@ class ProfileSettingsScreen extends StatefulWidget {
 class ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    TextStyle? textStyle = Theme
-        .of(context)
-        .textTheme
-        .headline6;
+    TextStyle? textStyle = Theme.of(context).textTheme.bodyLarge;
     ScreenUtil.init(
       context,
       designSize: Size(340, 700),
@@ -101,11 +98,7 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             ),
                           ),
                           Spacer(),
-                          Icon(
-                            LineAwesomeIcons.angle_right,
-                            size: kSpacingUnit.w * 2.5,
-                            color: Colors.black,
-                          ),
+
                         ],
                       ),
                     ),
@@ -128,11 +121,7 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       ),
                       child: Row(
                         children: <Widget>[
-                          Icon(
-                            LineAwesomeIcons.history,
-                            size: kSpacingUnit.w * 2.5,
-                            color: Colors.black,
-                          ),
+
                           SizedBox(width: 10),
                           Align(
                             alignment: Alignment.centerLeft,
@@ -142,11 +131,7 @@ class ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                             ),
                           ),
                           Spacer(),
-                          Icon(
-                            LineAwesomeIcons.angle_right,
-                            size: kSpacingUnit.w * 2.5,
-                            color: Colors.black,
-                          ),
+
                           
                         ],
                         

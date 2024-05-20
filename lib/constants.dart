@@ -30,7 +30,6 @@ final kDarkTheme = ThemeData(
   fontFamily: 'SFProText',
   primaryColor: kDarkPrimaryColor,
   canvasColor: kDarkPrimaryColor,
-  backgroundColor: kDarkSecondaryColor,
   iconTheme: ThemeData.dark().iconTheme.copyWith(
     color: kLightSecondaryColor,
   ),
@@ -46,7 +45,6 @@ final kLightTheme = ThemeData(
   fontFamily: 'SFProText',
   primaryColor: kLightPrimaryColor,
   canvasColor: kLightPrimaryColor,
-  backgroundColor: kLightSecondaryColor,
   hintColor: kAccentColor,
   iconTheme: ThemeData.light().iconTheme.copyWith(
     color: kDarkSecondaryColor,

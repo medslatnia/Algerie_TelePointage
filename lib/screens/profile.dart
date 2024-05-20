@@ -84,7 +84,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.white
                     )),
                     style: ElevatedButton.styleFrom(
-                        primary: Color(0xFF00AA5B),
+                        backgroundColor: Color(0xFF00AA5B),
                         padding: EdgeInsets.symmetric(horizontal: 45),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
                 ),
@@ -106,7 +106,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.white
                     )),
                     style: ElevatedButton.styleFrom(
-                        primary: Colors.red,
+                        backgroundColor: Colors.red,
                         padding: EdgeInsets.symmetric(horizontal: 45),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))
                 ),

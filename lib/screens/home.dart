@@ -8,6 +8,9 @@ import 'notifications.dart';
 import 'profile.dart';
 import 'windows/mois.dart';
 import 'windows/quitter.dart';
+import 'windows/checkin.dart';
+import 'package:geolocator/geolocator.dart';
+import 'services/localiser.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,6 +20,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+
+  double LAT = 30.4219983;
+  double LON = -122.084;
+  double tolerance = 0.0009;// une tolérence de 100 mètres = 0.0009 degrés
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +81,7 @@ class HomeScreenState extends State<HomeScreen> {
                               child: MaterialButton(
                                 color: Color.fromARGB(255, 33, 143, 36),
                                 onPressed: () {
-                                  // Action à exécuter lors du clic sur le bouton
+                                  detecterLocalisation(context, LAT, LON, tolerance);
                                 },
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),

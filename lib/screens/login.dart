@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
+import './services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -9,17 +10,43 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
+  String _matricule = '';
+  String _password = '';
+  final AuthService _authService = AuthService();
+
 
   var _formKey = GlobalKey<FormState>();
 
   final _minimumPadding = 5.0;
 
-  TextEditingController emailContoller = TextEditingController();
-  TextEditingController passwordContoller = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  void _login() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+
+      final matricule = emailController.text;
+      final password = passwordController.text;
+
+      try {
+        final result = await _authService.login(_matricule, _password);
+        print('Login successful: $result');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+
+      } catch (error) {
+        print('Login failed: $error');
+        // Handle login error
+      }
+    }
+  }
 
   String _check() {
-    double email = double.parse(emailContoller.text);
-    double password = double.parse(passwordContoller.text);
+    double email = double.parse(emailController.text);
+    double password = double.parse(passwordController.text);
     String result = 'Login success';
     return result;
   }
@@ -29,7 +56,8 @@ class LoginScreenState extends State<LoginScreen> {
     Image image = Image(
       image: assetImage,
       width: 497.0,
-      height: 235.0,);
+      height: 235.0,
+    );
     return Container(
       child: image,
       margin: EdgeInsets.all(_minimumPadding * 1.0),
@@ -38,10 +66,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    TextStyle? textStyle = Theme
-        .of(context)
-        .textTheme
-        .headline6;
+    TextStyle? textStyle = Theme.of(context).textTheme.bodyLarge;
 
     return Scaffold(
 
@@ -78,7 +103,7 @@ class LoginScreenState extends State<LoginScreen> {
                   child: TextFormField(
                     keyboardType: TextInputType.text,
                     style: textStyle,
-                    controller: emailContoller,
+                    controller: emailController,
                     validator: (String? value) {
                       if (value!.isEmpty) {
                         return 'Veuillez saisir votre matricule';
@@ -105,12 +130,15 @@ class LoginScreenState extends State<LoginScreen> {
                     keyboardType: TextInputType.text,
                     obscureText: true,
                     style: textStyle,
-                    controller: passwordContoller,
+                    controller: passwordController,
                     validator: (String? value) {
                       if (value!.isEmpty) {
-                        return 'Veuillez saisir votre matricule';
+                        return 'Veuillez saisir votre mot de passe';
                       }
                       return null;
+                    },
+                    onSaved: (value) {
+                      _password = value!;
                     },
                     decoration: InputDecoration(
                         labelText: 'Mot de passe',
@@ -133,10 +161,7 @@ class LoginScreenState extends State<LoginScreen> {
                     Expanded(
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Color(0xFF00AA5B),
-                          onPrimary: Theme
-                              .of(context)
-                              .primaryColor,
+                          backgroundColor: Color(0xFF00AA5B),
                         ),
                         child: Text(
                           'Se connecter',
@@ -145,11 +170,7 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => HomeScreen()),
-                            );
-                          }
+                            }
                         },
 
 
@@ -229,6 +250,5 @@ class LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+    }
   }
-
-}
