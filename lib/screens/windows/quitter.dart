@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import '../services/localiser.dart';
+import '../home.dart';
+import 'checkout.dart';
+import 'noncheckout.dart';
 
 class Quitterannuler extends StatefulWidget {
   const Quitterannuler({super.key});
@@ -8,6 +12,7 @@ class Quitterannuler extends StatefulWidget {
 }
 
 class _QuitterannulerState extends State<Quitterannuler> {
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -57,7 +62,21 @@ class _QuitterannulerState extends State<Quitterannuler> {
             ),
             SizedBox(width: 20),
             TextButton(
-              onPressed: () {},
+              onPressed: () async {
+                detecterLocalisation(context, LAT, LON, tolerance);
+                if (estAuBonEndroit == true) {
+                  await showDialog(
+                  context: context,
+                  builder: (context) => checkout(),
+                  );
+                }
+                else {
+                  await showDialog(
+                  context: context,
+                  builder: (context) => noncheckout(), // Affichez le dialogue de quitterannuler
+                  );
+                }
+              },
               style: TextButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 33, 143, 36),
                 shape: RoundedRectangleBorder(

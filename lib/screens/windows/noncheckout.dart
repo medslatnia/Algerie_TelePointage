@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-class checkin extends StatefulWidget {
-  const checkin({super.key});
+class noncheckout extends StatefulWidget {
+  const noncheckout({super.key});
 
   @override
-  State<checkin> createState() => _checkinState();
+  State<noncheckout> createState() => _noncheckoutrState();
 }
 
-class _checkinState extends State<checkin> {
-
-
+class _noncheckoutrState extends State<noncheckout> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -18,14 +16,14 @@ class _checkinState extends State<checkin> {
         width: 400,
         child: Row(children: [
           Icon(
-            Icons.check_circle_outline,
+            Icons.error,
             size: 40.0, // Taille de l'icône
-            color: Color.fromARGB(255, 33, 143, 36), // Couleur de l'icône
+            color: Color.fromARGB(255, 160, 14, 3), // Couleur de l'icône
           ),
           SizedBox(width: 45),
           Expanded(
             child: Text(
-              "Enregistré !",
+              "Vous n'êtes pas au bon emplacement",
               style: TextStyle(
                 //fontWeight: FontWeight.bold,
                 fontSize: 20,

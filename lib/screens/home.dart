@@ -1,3 +1,6 @@
+import 'package:algerie_telecom_pointage/screens/windows/checkout.dart';
+import 'package:algerie_telecom_pointage/screens/windows/noncheckin.dart';
+import 'package:algerie_telecom_pointage/screens/windows/noncheckout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
@@ -20,11 +23,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-
-  double LAT = 30.4219983;
-  double LON = -122.084;
-  double tolerance = 0.0009;// une tolérence de 100 mètres = 0.0009 degrés
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +56,7 @@ class HomeScreenState extends State<HomeScreen> {
           ],
         ),
         body: Container(
-          padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+          padding: EdgeInsets.fromLTRB(20, 0, 20, 150),
           child: Column(
             children: [
               Expanded(
@@ -80,8 +78,21 @@ class HomeScreenState extends State<HomeScreen> {
                               height: 150,
                               child: MaterialButton(
                                 color: Color.fromARGB(255, 33, 143, 36),
-                                onPressed: () {
-                                  detecterLocalisation(context, LAT, LON, tolerance);
+                                onPressed: () async {
+                                  detecterLocalisation(
+                                      context, LAT, LON, tolerance);
+                                  if (estAuBonEndroit == true) {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (context) => checkin(),
+                                    );
+                                  } else {
+                                    await showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          noncheckin(), // Affichez le dialogue de quitterannuler
+                                    );
+                                  }
                                 },
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
@@ -179,45 +190,44 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(
-                height: 0,
+                height: 10,
               ),
               Expanded(
-                child: Container(
-                  //height: 300,
-                  //width: 180,
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.dehaze, //3 Traits
-                          size: 38,
-                          color: Colors.black,
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.dehaze, //3 Traits
+                            size: 38,
+                            color: Colors.black,
+                          ),
+                          onPressed: () async {
+                            final moisSelectionne = await showDialog(
+                              context: context,
+                              builder: (context) => MoisSelectorDialog(), // Affichez le dialogue de sélection de mois
+                            );
+
+                            // Faites quelque chose avec la valeur sélectionnée, par exemple :
+                            print("Mois sélectionné : $moisSelectionne");
+                          },
                         ),
-                        //onPressed: () {
-                        onPressed: () async {
-                          final moisSelectionne = await showDialog(
-                            context: context,
-                            builder: (context) =>
-                                MoisSelectorDialog(), // Affichez le dialogue de sélection de mois
-                          );
-
-                          // Faites quelque chose avec la valeur sélectionnée, par exemple :
-                          print("Mois sélectionné : $moisSelectionne");
-                        },
-                      ),
-
-                      //Icon(Icons.dehaze, size: 38.0),
-                      SizedBox(
-                        width: 2,
-                      ),
-                      Text(
-                        "Historique",
-                        style: TextStyle(
+                        SizedBox(
+                          width: 2,
+                        ),
+                        Text(
+                          "Historique",
+                          style: TextStyle(
                             fontSize: 23,
                             //fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
-                    ],
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

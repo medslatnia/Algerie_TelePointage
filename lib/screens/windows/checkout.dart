@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class checkin extends StatefulWidget {
-  const checkin({super.key});
+class checkout extends StatefulWidget {
+  const checkout({super.key});
 
   @override
-  State<checkin> createState() => _checkinState();
+  State<checkout> createState() => _checkoutState();
 }
 
-class _checkinState extends State<checkin> {
+class _checkoutState extends State<checkout> {
 
 
   @override
@@ -25,7 +25,7 @@ class _checkinState extends State<checkin> {
           SizedBox(width: 45),
           Expanded(
             child: Text(
-              "Enregistré !",
+              "Sorti !",
               style: TextStyle(
                 //fontWeight: FontWeight.bold,
                 fontSize: 20,
