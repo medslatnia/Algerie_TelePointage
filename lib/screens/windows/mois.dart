@@ -14,18 +14,19 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
       title: Text("Choisir un mois"),
       content: Container(
         height: 270,
-        width: 333,
+        width: 700,
         child: GridView(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            mainAxisSpacing: 0,
+            mainAxisSpacing: 1,
             crossAxisSpacing: 0,
-            mainAxisExtent: 40,
+            mainAxisExtent: 35,
           ),
           children: [
             RadioListTile(
               activeColor: Color.fromARGB(255, 33, 143, 36),
-              title: Text("Janvier"),
+              title: Text("Janvier", style: TextStyle(fontSize: 13),),
+
               value: "Janvier",
               groupValue: moisSelectionne,
               onChanged: (val) {
@@ -39,7 +40,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
 
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Juillet"),
+                title: Text("Juillet", style: TextStyle(fontSize: 13),),
                 value: "Juillet",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -49,7 +50,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Février"),
+                title: Text("Février", style: TextStyle(fontSize: 13),),
                 value: "Février",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -59,7 +60,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Aout"),
+                title: Text("Aout", style: TextStyle(fontSize: 13),),
                 value: "Aout",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -69,7 +70,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Mars"),
+                title: Text("Mars", style: TextStyle(fontSize: 13),),
                 value: "Mars",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -79,7 +80,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Septembre"),
+                title: Text("Septembre", style: TextStyle(fontSize: 13),),
                 value: "Septembre",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -89,7 +90,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Avril"),
+                title: Text("Avril", style: TextStyle(fontSize: 13),),
                 value: "Avril",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -99,7 +100,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Octobre"),
+                title: Text("Octobre", style: TextStyle(fontSize: 13),),
                 value: "Octobre",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -109,7 +110,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Mai"),
+                title: Text("Mai", style: TextStyle(fontSize: 13),),
                 value: "Mai",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -119,7 +120,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Novembre"),
+                title: Text("Novembre", style: TextStyle(fontSize: 13),),
                 value: "Novembre",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -129,7 +130,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Juin"),
+                title: Text("Juin", style: TextStyle(fontSize: 13),),
                 value: "Juin",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -139,7 +140,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                 }),
             RadioListTile(
                 activeColor: Color.fromARGB(255, 33, 143, 36),
-                title: Text("Décembre"),
+                title: Text("Décembre", style: TextStyle(fontSize: 13),),
                 value: "Décembre",
                 groupValue: moisSelectionne,
                 onChanged: (val) {
@@ -148,7 +149,7 @@ class _MoisSelectorDialogState extends State<MoisSelectorDialog> {
                   });
                 }),
 
-            // Ajoutez les autres RadioListTile pour les autres mois ici...
+
           ],
         ),
       ),

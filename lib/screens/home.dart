@@ -19,6 +19,7 @@ import 'package:algerie_telecom_pointage/screens/historique/historique.dart';
 
 List<Map<String, dynamic>> historique = [];
 DateTime? heureEntree;
+DateTime? heureSortie;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -66,15 +67,15 @@ class HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.3, // ajustez la hauteur selon vos besoins
+              height: MediaQuery.of(context).size.height *
+                  0.3, // ajustez la hauteur selon vos besoins
               child: Container(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
                     Expanded(
                       child: Container(
-
                         decoration: BoxDecoration(
                           color: Color.fromARGB(255, 33, 143, 36),
                           borderRadius: BorderRadius.circular(20),
@@ -89,8 +90,12 @@ class HomeScreenState extends State<HomeScreen> {
                                   context, LAT, LON, tolerance);
                               await Future.delayed(Duration(milliseconds: 800));
                               if (estAuBonEndroit == true) {
-                                setState(() {
-                                  heureEntree = DateTime.now();
+                                DateTime heureEntree =
+                                    DateTime.now(); // Heure de sortie actuelle
+                                historique.add({
+                                  'date': DateTime.now(),
+                                  'heureEntree': heureEntree,
+                                  'heureSortie': null,
                                 });
 
                                 await showDialog(
@@ -135,7 +140,6 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-
                     SizedBox(width: 10),
                     Expanded(
                       child: Container(
@@ -187,7 +191,8 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 0), // Définir les marges en haut et en bas
+              padding: EdgeInsets.symmetric(vertical: 0),
+              // Définir les marges en haut et en bas
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -217,42 +222,58 @@ class HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 itemCount: historique.length,
                 itemBuilder: (context, index) {
-                  final date = historique[index]['date'];
-                  final entree = historique[index]['heureEntree'];
-                  final sortie = historique[index]['heureSortie'];
-                  String sortieText = sortie != null
-                      ? 'Sortie: ${sortie.toLocal().toIso8601String().split('T').last.substring(0, 5)}'
-                      : 'Sortie: Non enregistrée';
+                  final reversedIndex = historique.length - 1 - index;
+                  final date = historique[reversedIndex]['date'];
+                  final entree = historique[reversedIndex]['heureEntree'];
+                  final sortie = historique[reversedIndex]['heureSortie'];
 
-                  if (sortie != null) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                      ),
-                      child: ListTile(
-                        leading: Icon(Icons.check_circle, color: Colors.green),
-                        title: Text(
-                          'Date: ${date.toLocal().toIso8601String().split('T').first}',
-                        ),
-                        subtitle: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Entrée: ${entree.toLocal().toIso8601String().split('T').last.substring(0, 5)}',
-                            ),
-                            Text(
-                              sortieText,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                  // Conditions pour l'icône d'erreur
+                  bool isErreur = false;
+                  if (entree != null && entree.hour > 8) {
+                    isErreur = true;
+                  } else if (sortie != null && sortie.hour < 16) {
+                    isErreur = true;
                   }
+
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: ListTile(
+                      leading: Icon(
+                        isErreur
+                            ? Icons.error
+                            : sortie != null
+                                ? Icons.check_circle
+                                : Icons.access_time,
+                        color: isErreur
+                            ? Colors.red
+                            : sortie != null
+                                ? Colors.green
+                                : Colors.orange,
+                      ),
+                      title: Text(
+                        'Date: ${date.toLocal().toIso8601String().split('T').first}',
+                      ),
+                      subtitle: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Entrée: ${entree.toLocal().toIso8601String().split('T').last.substring(0, 5)}',
+                          ),
+                          sortie != null
+                              ? Text(
+                                  'Sortie: ${sortie.toLocal().toIso8601String().split('T').last.substring(0, 5)}',
+                                )
+                              : Text('Sortie: Non enregistré'),
+                        ],
+                      ),
+                    ),
+                  );
                 },
               ),
-
             ),
           ],
         ),

@@ -71,19 +71,10 @@ class _QuitterannulerState extends State<Quitterannuler> {
               onPressed: () async {
                 detecterLocalisation(context, LAT, LON, tolerance);
                 await Future.delayed(Duration(milliseconds: 750));
-                if (estAuBonEndroit == true) {
-                  if (heureEntree != null) {
-                    DateTime heureSortie =
-                        DateTime.now(); // Heure de sortie actuelle
-                    historique.add({
-                      'date': DateTime.now(),
-                      'heureEntree': heureEntree,
-                      'heureSortie': heureSortie,
-                    });
-                    heureEntree =
-                        null; // Réinitialiser l'heure d'entrée après avoir ajouté à l'historique
-                    setState(() {});
-                  }
+                if (estAuBonEndroit && historique.isNotEmpty) {
+                  setState(() {
+                    historique[historique.length - 1]['heureSortie'] = DateTime.now();
+                  });
                   await showDialog(
                     context: context,
                     builder: (context) => checkout(),
