@@ -5,6 +5,8 @@ import 'package:algerie_telecom_pointage/screens/profile.dart';
 import 'package:algerie_telecom_pointage/screens/login.dart';
 import 'screens/notifications.dart';
 import 'screens/home.dart';
+import 'package:algerie_telecom_pointage/Screens/historique/database_helper.dart';
+import 'package:algerie_telecom_pointage/Screens/historique/historique.dart';
 
 
 void main() {
@@ -17,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'AT Pointage',
       theme:
         ThemeData.from(colorScheme: ColorScheme.light().copyWith(

@@ -5,6 +5,7 @@ import '../windows/checkin.dart';
 import '../windows/noncheckin.dart';
 
 bool estAuBonEndroit = false;
+
 const double LAT = 37.4219983;
 const double LON = -122.084;
 const double tolerance = 0.0009;// une tolérence de 100 mètres = 0.0009 degrés
@@ -40,10 +41,10 @@ Future<bool> detecterLocalisation(BuildContext context, double Lat, double Lon, 
   // Ici vous pouvez faire ce que vous voulez avec les coordonnées, par exemple les utiliser dans votre application
   if (latitude >= minLat && latitude <= maxLat &&
       longitude >= minLon && longitude <= maxLon)  {
-      await Future.delayed(Duration(seconds: 2));
+      //await Future.delayed(Duration(seconds: 2));
     return estAuBonEndroit = true;
   } else {
-      await Future.delayed(Duration(seconds: 2));
+      //await Future.delayed(Duration(seconds: 2));
     return estAuBonEndroit = false;
 
 

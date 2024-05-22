@@ -11,6 +11,12 @@ class Quitterannuler extends StatefulWidget {
   State<Quitterannuler> createState() => _QuitterannulerState();
 }
 
+Future<DateTime> obtenirHeureSortie() async {
+  // Simuler un délai pour obtenir l'heure de sortie
+  await Future.delayed(Duration(seconds: 1));
+  return DateTime.now();
+}
+
 class _QuitterannulerState extends State<Quitterannuler> {
 
   @override
@@ -64,16 +70,29 @@ class _QuitterannulerState extends State<Quitterannuler> {
             TextButton(
               onPressed: () async {
                 detecterLocalisation(context, LAT, LON, tolerance);
+                await Future.delayed(Duration(milliseconds: 750));
                 if (estAuBonEndroit == true) {
+                  if (heureEntree != null) {
+                    DateTime heureSortie =
+                        DateTime.now(); // Heure de sortie actuelle
+                    historique.add({
+                      'date': DateTime.now(),
+                      'heureEntree': heureEntree,
+                      'heureSortie': heureSortie,
+                    });
+                    heureEntree =
+                        null; // Réinitialiser l'heure d'entrée après avoir ajouté à l'historique
+                    setState(() {});
+                  }
                   await showDialog(
-                  context: context,
-                  builder: (context) => checkout(),
+                    context: context,
+                    builder: (context) => checkout(),
                   );
-                }
-                else {
+                } else {
                   await showDialog(
-                  context: context,
-                  builder: (context) => noncheckout(), // Affichez le dialogue de quitterannuler
+                    context: context,
+                    builder: (context) =>
+                        noncheckout(), // Affichez le dialogue de quitterannuler
                   );
                 }
               },
@@ -96,5 +115,3 @@ class _QuitterannulerState extends State<Quitterannuler> {
     );
   }
 }
-
-
