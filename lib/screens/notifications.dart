@@ -1,21 +1,53 @@
-
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import '../constants.dart';
-import 'profile.dart';
-import 'profile_editing.dart';
-import 'login.dart';
-import 'home.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class NotificationsScreen extends StatelessWidget {
-  const NotificationsScreen({Key? key}): super(key:key);
+class NotificationsScreen extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return NotificationsScreenState();
+  }
+}
+
+class NotificationsScreenState extends State<NotificationsScreen> {
+  late String matricule = "";
+  late List<Map<String, dynamic>> notifications = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMatricule();
+  }
+
+  Future<void> fetchMatricule() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      matricule = prefs.getString('matricule') ?? "";
+    });
+    fetchNotifications();
+  }
+
+  Future<void> fetchNotifications() async {
+    final response = await http.get(
+      Uri.parse('https://yourapiurl.com/api/notifications?matricule=$matricule'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      setState(() {
+        notifications = List<Map<String, dynamic>>.from(data['notifications']);
+      });
+    } else {
+      // Handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar(),
-      body: listView(),
+      body: buildNotificationsList(),
     );
   }
 
@@ -29,100 +61,39 @@ class NotificationsScreen extends StatelessWidget {
         icon: Icon(Icons.arrow_back),
         color: Colors.white,
         onPressed: () {
+          Navigator.pop(context);
         },
       ),
       backgroundColor: Color.fromRGBO(37, 86, 162, 1),
-
     );
   }
-  Widget listView() {
 
-    return ListView.separated(
-
+  Widget buildNotificationsList() {
+    return ListView.builder(
+      itemCount: notifications.length,
       itemBuilder: (context, index) {
-        return listViewItem(index);
+        return buildNotificationItem(notifications[index]);
       },
-      separatorBuilder: (context, index) {
-        return Divider(height: 15);
-      },
-      itemCount: 5,
     );
   }
 
-  Widget listViewItem(int index){
-    return Container(
-
-      margin: EdgeInsets.only(left: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          prefixIcon(),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  message(index),
-                  timeAndData(index),
-                ],
-              ),
-            ),
-          ),
-        ],
+  Widget buildNotificationItem(Map<String, dynamic> notification) {
+    return ListTile(
+      leading: Icon(
+        Icons.notifications,
+        color: Colors.white,
+      ),
+      title: Text(
+        'Admin',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+      subtitle: Text(
+        notification['content'],
+        style: TextStyle(color: Colors.white),
       ),
     );
   }
-
-  Widget prefixIcon(){
-    return Container(
-      height: 40,
-      width: 40,
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.grey.shade300,
-      ),
-      child: Icon(Icons.notifications, size: 20, color: Colors.grey.shade700,),
-    );
-  }
-
-  Widget message(int index){
-    double textSize = 14;
-    return Container(
-      child: RichText(
-        maxLines: 3,
-        overflow: TextOverflow.ellipsis,
-        text: TextSpan(
-          text:'Admin',
-          style: TextStyle(
-              fontSize: textSize,
-              color: Colors.black,
-              fontWeight: FontWeight.bold),
-
-        children: [
-          TextSpan(
-            text: " Veuillez vous présenter à l'administration",
-          style: TextStyle(
-            fontWeight: FontWeight.w400,
-        )
-      )
-        ]
-        )
-      ),
-    );
-  }
-
-Widget timeAndData(int index){
-    return Container(
-      margin: EdgeInsets.only(top:5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('23-01-2021', style: TextStyle(fontSize: 10.0),),
-          Text('07:01', style: TextStyle(fontSize: 10.0),)
-        ],
-      ),
-    );
-}
 }
