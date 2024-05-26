@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
 import './services/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,42 +14,48 @@ class LoginScreenState extends State<LoginScreen> {
   String _matricule = '';
   String _password = '';
   final AuthService _authService = AuthService();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final double _minimumPadding = 5.0;
 
-
-  var _formKey = GlobalKey<FormState>();
-
-  final _minimumPadding = 5.0;
+  late SharedPreferences _prefs;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _initSharedPreferences();
+  }
+
+  void _initSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
   void _login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-
       final matricule = emailController.text;
       final password = passwordController.text;
 
       try {
-        final result = await _authService.login(_matricule, _password);
+        final result = await _authService.login(matricule, password);
         print('Login successful: $result');
+
+        // Enregistrement du matricule dans SharedPreferences
+        await _prefs.setString('matricule', matricule);
+
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => HomeScreen()),
         );
-
       } catch (error) {
         print('Login failed: $error');
-        // Handle login error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: $error')),
+        );
       }
     }
-  }
-
-  String _check() {
-    double email = double.parse(emailController.text);
-    double password = double.parse(passwordController.text);
-    String result = 'Login success';
-    return result;
   }
 
   Widget getImageAsset() {
@@ -69,93 +76,84 @@ class LoginScreenState extends State<LoginScreen> {
     TextStyle? textStyle = Theme.of(context).textTheme.bodyLarge;
 
     return Scaffold(
-
       appBar: AppBar(
-        title: Text(
-            "Login",
-            style: TextStyle(color: Colors.white)
-        )
-        ,
-        backgroundColor
-            :
-        Color
-          (
-            0xFF2556A2
-        )
-        ,
-      )
-      ,
-
-      body:
-
-      Form(
+        title: Text("Login", style: TextStyle(color: Colors.white)),
+        backgroundColor: Color(0xFF2556A2),
+      ),
+      body: Form(
         key: _formKey,
-        child:
-        Padding(
+        child: Padding(
           padding: EdgeInsets.all(_minimumPadding * 1.5),
           child: ListView(
             children: <Widget>[
               getImageAsset(),
               Padding(
-                  padding: EdgeInsets.only(
-                      top: _minimumPadding * 1.0,
-                      bottom: _minimumPadding * 1.0),
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    style: textStyle,
-                    controller: emailController,
-                    validator: (String? value) {
-                      if (value!.isEmpty) {
-                        return 'Veuillez saisir votre matricule';
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                        labelText: 'Matricule',
-                        hintText: "Veuillez saisir votre matricule",
-                        labelStyle: textStyle,
-                        errorStyle: TextStyle(
-                          color: Colors.red,
-                          fontSize: 14.0,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                        )),
-                  )),
-
-              Padding(
-                  padding: EdgeInsets.only(
-                    top: _minimumPadding * 1.0, bottom: _minimumPadding * 1.0,),
-                  child: TextFormField(
-                    keyboardType: TextInputType.text,
-                    obscureText: true,
-                    style: textStyle,
-                    controller: passwordController,
-                    validator: (String? value) {
-                      if (value!.isEmpty) {
-                        return 'Veuillez saisir votre mot de passe';
-                      }
-                      return null;
-                    },
-                    onSaved: (value) {
-                      _password = value!;
-                    },
-                    decoration: InputDecoration(
-                        labelText: 'Mot de passe',
-                        hintText: "Veuillez saisir votre mot de passe",
-                        labelStyle: textStyle,
-                        errorStyle: TextStyle(
-                          color: Colors.red,
-                          fontSize: 14.0,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                        )),
-                  )),
-
+                padding: EdgeInsets.only(
+                  top: _minimumPadding * 1.0,
+                  bottom: _minimumPadding * 1.0,
+                ),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  style: textStyle,
+                  controller: emailController,
+                  validator: (String? value) {
+                    if (value!.isEmpty) {
+                      return 'Veuillez saisir votre matricule';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Matricule',
+                    hintText: "Veuillez saisir votre matricule",
+                    labelStyle: textStyle,
+                    errorStyle: TextStyle(
+                      color: Colors.red,
+                      fontSize: 14.0,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                ),
+              ),
               Padding(
                 padding: EdgeInsets.only(
-                    top: _minimumPadding, bottom: _minimumPadding),
+                  top: _minimumPadding * 1.0,
+                  bottom: _minimumPadding * 1.0,
+                ),
+                child: TextFormField(
+                  keyboardType: TextInputType.text,
+                  obscureText: true,
+                  style: textStyle,
+                  controller: passwordController,
+                  validator: (String? value) {
+                    if (value!.isEmpty) {
+                      return 'Veuillez saisir votre mot de passe';
+                    }
+                    return null;
+                  },
+                  onSaved: (value) {
+                    _password = value!;
+                  },
+                  decoration: InputDecoration(
+                    labelText: 'Mot de passe',
+                    hintText: "Veuillez saisir votre mot de passe",
+                    labelStyle: textStyle,
+                    errorStyle: TextStyle(
+                      color: Colors.red,
+                      fontSize: 14.0,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5.0),
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  top: _minimumPadding,
+                  bottom: _minimumPadding,
+                ),
                 child: Row(
                   children: <Widget>[
                     Expanded(
@@ -170,27 +168,16 @@ class LoginScreenState extends State<LoginScreen> {
                         ),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            }
+                            _login();
+                          }
                         },
-
-
                       ),
                     ),
                   ],
                 ),
-
-
-              )
-
-
-              ,
-              Container
-                (
-                width: _minimumPadding * 5,
               ),
-
+              Container(width: _minimumPadding * 5),
               Row(
-
                 children: [
                   Expanded(
                     child: Container(
@@ -211,23 +198,19 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-
               Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                // Aligns the children to the bottom
                 crossAxisAlignment: CrossAxisAlignment.center,
-                // Aligns the children to the center horizontally
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 25.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      // Aligns the children horizontally in the center
                       children: [
                         Text("Un problème?"),
                         TextButton(
                           onPressed: () {
-                            print("Register Now button pressed");
+                            // Handle button press
                           },
                           child: Text(
                             'Contactez-nous',
@@ -242,13 +225,10 @@ class LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-
-
             ],
-
           ),
         ),
       ),
     );
-    }
   }
+}

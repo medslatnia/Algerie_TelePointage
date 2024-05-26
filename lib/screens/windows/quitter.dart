@@ -3,9 +3,15 @@ import '../services/localiser.dart';
 import '../home.dart';
 import 'checkout.dart';
 import 'noncheckout.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+bool isSortieEffectue() {
+  return sortieEffectue;
+}
+
 
 class Quitterannuler extends StatefulWidget {
-  const Quitterannuler({super.key});
+  const Quitterannuler({Key? key}) : super(key: key);
 
   @override
   State<Quitterannuler> createState() => _QuitterannulerState();
@@ -18,6 +24,23 @@ Future<DateTime> obtenirHeureSortie() async {
 }
 
 class _QuitterannulerState extends State<Quitterannuler> {
+  late SharedPreferences _prefs;
+  late String _matricule;
+  bool Emergency = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSharedPreferences();
+  }
+
+  void _initSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _matricule = _prefs.getString('matricule') ?? '';
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,17 +50,15 @@ class _QuitterannulerState extends State<Quitterannuler> {
         width: 400,
         child: Row(children: [
           Icon(
-            Icons
-                .error, // Utilisez l'icône d'erreur pour le point d'exclamation
-            size: 40.0, // Taille de l'icône
-            color: Color.fromARGB(255, 160, 14, 3), // Couleur de l'icône
+            Icons.error,
+            size: 40.0,
+            color: Color.fromARGB(255, 160, 14, 3),
           ),
           SizedBox(width: 20),
           Expanded(
             child: Text(
               "Etes-Vous surs de vouloir quitter?",
               style: TextStyle(
-                //fontWeight: FontWeight.bold,
                 fontSize: 20,
                 color: Colors.black,
               ),
@@ -56,7 +77,7 @@ class _QuitterannulerState extends State<Quitterannuler> {
               style: TextButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 7, 78, 136),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20), // Bord circulaire
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
               child: Text(
@@ -70,11 +91,20 @@ class _QuitterannulerState extends State<Quitterannuler> {
             TextButton(
               onPressed: () async {
                 detecterLocalisation(context, LAT, LON, tolerance);
-                await Future.delayed(Duration(milliseconds: 750));
+                await Future.delayed(Duration(seconds: 1));
                 if (estAuBonEndroit && historique.isNotEmpty) {
+                  DateTime heureSortie = DateTime.now();
+                  historique[historique.length - 1]['heureSortie'] = heureSortie;
+
+                  if (heureSortie.hour < 16) {
+                    Emergency = true;
+                  }
+
+                  //await apiService.enregistrerHeureSortie(_matricule, heureSortie, Emergency);
                   setState(() {
-                    historique[historique.length - 1]['heureSortie'] = DateTime.now();
+                    bool sortieEffectue = true;
                   });
+
                   await showDialog(
                     context: context,
                     builder: (context) => checkout(),
@@ -90,7 +120,7 @@ class _QuitterannulerState extends State<Quitterannuler> {
               style: TextButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 33, 143, 36),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20), // Bord circulaire
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
               child: Text(

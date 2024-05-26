@@ -1,7 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:algerie_telecom_pointage/screens/windows/checkout.dart';
 import 'package:algerie_telecom_pointage/screens/windows/noncheckin.dart';
 import 'package:algerie_telecom_pointage/screens/windows/noncheckout.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import '../constants.dart';
@@ -16,10 +16,16 @@ import 'package:geolocator/geolocator.dart';
 import 'services/localiser.dart';
 import 'package:algerie_telecom_pointage/screens/historique/database_helper.dart';
 import 'package:algerie_telecom_pointage/screens/historique/historique.dart';
+import 'services/api_services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 
+final ApiService apiService = ApiService();
 List<Map<String, dynamic>> historique = [];
 DateTime? heureEntree;
 DateTime? heureSortie;
+bool enregistrementEffectue = false;
+bool sortieEffectue = false;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -29,6 +35,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
+  late SharedPreferences _prefs;
+  late String _matricule;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSharedPreferences();
+    resetStatesAtMidnight();
+  }
+
+  void _initSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+    _matricule = _prefs.getString('matricule') ?? '';
+  }
+  void resetStatesAtMidnight() {
+    final now = DateTime.now();
+    final midnight = DateTime(now.year, now.month, now.day + 1);
+
+    Duration durationUntilMidnight = midnight.difference(now);
+
+    Timer(durationUntilMidnight, () {
+      setState(() {
+        enregistrementEffectue = false;
+        sortieEffectue = false;
+      });
+      resetStatesAtMidnight(); // Réinitialiser à minuit chaque jour
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,8 +103,7 @@ class HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height *
-                  0.3, // ajustez la hauteur selon vos besoins
+              height: MediaQuery.of(context).size.height * 0.3,
               child: Container(
                 padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
                 child: Row(
@@ -77,7 +112,9 @@ class HomeScreenState extends State<HomeScreen> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color.fromARGB(255, 33, 143, 36),
+                          color: enregistrementEffectue
+                ? Color.fromARGB(255, 51, 193, 56) // Couleur plus claire
+                      : Color.fromARGB(255, 33, 143, 36),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: SizedBox(
@@ -85,19 +122,21 @@ class HomeScreenState extends State<HomeScreen> {
                           height: 150,
                           child: MaterialButton(
                             color: Color.fromARGB(255, 33, 143, 36),
-                            onPressed: () async {
-                              detecterLocalisation(
-                                  context, LAT, LON, tolerance);
-                              await Future.delayed(Duration(milliseconds: 800));
+                            onPressed: !enregistrementEffectue ? () async {
+                              detecterLocalisation(context, LAT, LON, tolerance);
+                              await Future.delayed(Duration(seconds: 1));
                               if (estAuBonEndroit == true) {
-                                DateTime heureEntree =
-                                    DateTime.now(); // Heure de sortie actuelle
+                                heureEntree = DateTime.now();
                                 historique.add({
                                   'date': DateTime.now(),
                                   'heureEntree': heureEntree,
                                   'heureSortie': null,
                                 });
-
+                                // Enregistrer l'heure d'entrée
+                                //apiService.enregistrerHeureEntree(_matricule, heureEntree!);
+                                setState(() {
+                                  enregistrementEffectue = true;
+                                });
                                 await showDialog(
                                   context: context,
                                   builder: (context) => checkin(),
@@ -108,7 +147,7 @@ class HomeScreenState extends State<HomeScreen> {
                                   builder: (context) => noncheckin(),
                                 );
                               }
-                            },
+                            } : null,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -128,7 +167,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 ),
                                 SizedBox(width: 20),
                                 Text(
-                                  "S'enregistrer",
+                                  enregistrementEffectue ? "Enregistré" : "S'enregistrer",
                                   style: TextStyle(
                                     fontSize: 20,
                                     color: Colors.white,
@@ -140,6 +179,11 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
+
+
+
+
+
                     SizedBox(width: 10),
                     Expanded(
                       child: Container(
@@ -148,13 +192,15 @@ class HomeScreenState extends State<HomeScreen> {
                           height: 150,
                           child: MaterialButton(
                             color: Color.fromARGB(255, 7, 78, 136),
-                            onPressed: () async {
+                            onPressed: enregistrementEffectue && !sortieEffectue ? () async {
+
                               final quitternon = await showDialog(
                                 context: context,
                                 builder: (context) => Quitterannuler(),
                               );
+                              if(isSortieEffectue()){sortieEffectue = true;}
                               //faire qlq chose avec quitternon
-                            },
+                            } : null,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -191,32 +237,31 @@ class HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(vertical: 0),
-              // Définir les marges en haut et en bas
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.dehaze, size: 38, color: Colors.black),
-                    onPressed: () async {
-                      final moisSelectionne = await showDialog(
-                        context: context,
-                        builder: (context) => MoisSelectorDialog(),
-                      );
-                      print("Mois sélectionné : $moisSelectionne");
-                    },
-                  ),
-                  SizedBox(width: 2),
-                  Text(
-                    "Historique",
-                    style: TextStyle(
-                      fontSize: 23,
-                      color: Colors.black,
+                padding: EdgeInsets.symmetric(vertical: 0),
+                // Définir les marges en haut et en bas
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.dehaze, size: 38, color: Colors.black),
+                      onPressed: () async {
+                        final moisSelectionne = await showDialog(
+                          context: context,
+                          builder: (context) => MoisSelectorDialog(),
+                        );
+                        print("Mois sélectionné : $moisSelectionne");
+                      },
                     ),
-                  ),
-                ],
-              ),
-            ),
+                    SizedBox(width: 2),
+                    Text(
+                      "Historique",
+                      style: TextStyle(
+                        fontSize:23,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                )),
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
@@ -246,13 +291,13 @@ class HomeScreenState extends State<HomeScreen> {
                         isErreur
                             ? Icons.error
                             : sortie != null
-                                ? Icons.check_circle
-                                : Icons.access_time,
+                            ? Icons.check_circle
+                            : Icons.access_time,
                         color: isErreur
                             ? Colors.red
                             : sortie != null
-                                ? Colors.green
-                                : Colors.orange,
+                            ? Colors.green
+                            : Colors.orange,
                       ),
                       title: Text(
                         'Date: ${date.toLocal().toIso8601String().split('T').first}',
@@ -265,8 +310,8 @@ class HomeScreenState extends State<HomeScreen> {
                           ),
                           sortie != null
                               ? Text(
-                                  'Sortie: ${sortie.toLocal().toIso8601String().split('T').last.substring(0, 5)}',
-                                )
+                            'Sortie: ${sortie.toLocal().toIso8601String().split('T').last.substring(0, 5)}',
+                          )
                               : Text('Sortie: Non enregistré'),
                         ],
                       ),
