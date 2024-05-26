@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'home.dart';
 import './services/auth_service.dart';
@@ -43,7 +45,7 @@ class LoginScreenState extends State<LoginScreen> {
         print('Login successful: $result');
 
         // Enregistrement du matricule dans SharedPreferences
-        await _prefs.setString('matricule', matricule);
+        //_prefs.setString('matricule', matricule);
 
         Navigator.push(
           context,
