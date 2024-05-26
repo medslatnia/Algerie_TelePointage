@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           background: Color.fromRGBO(238, 238, 238, 1), // Set the background color
         )),
 
-      home: HomeScreen(),
+      home: LoginScreen(),
     );
   }
 }
