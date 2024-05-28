@@ -14,8 +14,6 @@ import 'windows/quitter.dart';
 import 'windows/checkin.dart';
 import 'package:geolocator/geolocator.dart';
 import 'services/localiser.dart';
-import 'package:algerie_telecom_pointage/screens/historique/database_helper.dart';
-import 'package:algerie_telecom_pointage/screens/historique/historique.dart';
 import 'services/api_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';

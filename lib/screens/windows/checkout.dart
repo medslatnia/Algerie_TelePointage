@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../home.dart';
 
 class checkout extends StatefulWidget {
   const checkout({super.key});
@@ -41,7 +42,10 @@ class _checkoutState extends State<checkout> {
           children: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                );
               },
               style: TextButton.styleFrom(
                 backgroundColor: Color.fromARGB(255, 7, 78, 136),
