@@ -29,7 +29,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final savedMatricule = prefs.getString('matricule');
     if (savedMatricule == null) {
-      // Handle case where matricule is not saved in SharedPreferences
+      
       return;
     }
     final response = await http.get(

@@ -126,6 +126,7 @@ class HomeScreenState extends State<HomeScreen> {
                               detecterLocalisation(context, LAT, LON, tolerance);
                               await Future.delayed(Duration(seconds: 1));
                               if (estAuBonEndroit == true) {
+                                sendCheckInRequest();
                                 heureEntree = DateTime.now();
                                 historique.add({
                                   'date': DateTime.now(),

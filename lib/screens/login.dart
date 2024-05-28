@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'home.dart';
 import './services/auth_service.dart';
@@ -49,12 +48,12 @@ class LoginScreenState extends State<LoginScreen> {
   // Function to save matricule to SharedPreferences
   Future<void> setMatricule(String matricule) async {
     print('avant tout $matricule');
-   final SharedPreferences prefs = await SharedPreferences.getInstance();
-    SharedPreferences _prefs = await SharedPreferences.getInstance();
+   //final SharedPreferences prefs = await SharedPreferences.getInstance();
+     _prefs = await SharedPreferences.getInstance();
 
     //print('after all $prefs');
     setState(() {
-      prefs.setString('matricule', matricule);
+      _prefs.setString('matricule', matricule);
       _matricule = matricule;
       print('nous avons set ce matricule : $_matricule');
     });

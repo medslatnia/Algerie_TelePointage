@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart'; // Ajout de l'importation pour SharedPreferences
 import 'dart:developer';
 
+
+//vG0xyRDNvB
 class AuthService {
   final String apiUrl = 'http://10.0.2.2:8000/api/login';
 
-  //vG0xyRDNvB
   Future<Map<String, dynamic>> login(String matricule, String password) async {
     try {
-      //log('1'+ matricule+password);
-
       final response = await http.post(
         Uri.parse(apiUrl),
         headers: {
@@ -23,7 +23,19 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        // Décoder la réponse JSON
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        // Extraire le token
+        final String token = responseData['access_token'];
+
+        // Stocker le token dans SharedPreferences
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt_token', token);
+        log("le token a été enregistré dans SharedPreferences");
+
+        // Retourner les données de la réponse
+        return responseData;
       } else if (response.statusCode == 401) {
         throw Exception('Mauvaise données');
       } else {

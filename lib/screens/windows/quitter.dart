@@ -93,11 +93,15 @@ class _QuitterannulerState extends State<Quitterannuler> {
                 detecterLocalisation(context, LAT, LON, tolerance);
                 await Future.delayed(Duration(seconds: 1));
                 if (estAuBonEndroit && historique.isNotEmpty) {
+
                   DateTime heureSortie = DateTime.now();
                   historique[historique.length - 1]['heureSortie'] = heureSortie;
 
                   if (heureSortie.hour < 16) {
-                    Emergency = true;
+                    sendEmergencyCheckOutRequest();
+                  }
+                  else {
+                    sendCheckOutRequest();
                   }
 
                   //await apiService.enregistrerHeureSortie(_matricule, heureSortie, Emergency);
