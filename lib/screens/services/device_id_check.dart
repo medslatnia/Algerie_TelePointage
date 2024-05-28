@@ -10,7 +10,7 @@ class DeviceIdCheck {
 
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      deviceId = androidInfo.id;; // Unique ID on Android
+      deviceId = androidInfo.id; // Unique ID on Android
       // Unique ID on iOS
     } else {
       deviceId = 'Unknown platform';

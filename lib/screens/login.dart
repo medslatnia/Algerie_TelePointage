@@ -28,12 +28,38 @@ class LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     _initSharedPreferences();
+    getMatricule();
   }
 
   void _initSharedPreferences() async {
-    _prefs = await SharedPreferences.getInstance();
+     _prefs = await SharedPreferences.getInstance();
   }
 
+  // Function to load matricule from SharedPreferences
+  void getMatricule() async {
+     _prefs = await SharedPreferences.getInstance();
+    //SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _matricule = _prefs.getString('matricule') ?? '';
+    });
+
+
+  }
+
+  // Function to save matricule to SharedPreferences
+  Future<void> setMatricule(String matricule) async {
+    print('avant tout $matricule');
+   final SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+    //print('after all $prefs');
+    setState(() {
+      prefs.setString('matricule', matricule);
+      _matricule = matricule;
+      print('nous avons set ce matricule : $_matricule');
+    });
+
+  }
   void _login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
@@ -45,7 +71,11 @@ class LoginScreenState extends State<LoginScreen> {
         print('Login successful: $result');
 
         // Enregistrement du matricule dans SharedPreferences
-        //_prefs.setString('matricule', matricule);
+
+        await setMatricule(matricule);
+          print('matricule qui a été set : $_matricule');
+
+
 
         Navigator.push(
           context,
@@ -171,6 +201,7 @@ class LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             _login();
+
                           }
                         },
                       ),

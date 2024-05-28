@@ -10,6 +10,7 @@ import 'package:algerie_telecom_pointage/Screens/historique/historique.dart';
 
 
 void main() {
+  //WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
