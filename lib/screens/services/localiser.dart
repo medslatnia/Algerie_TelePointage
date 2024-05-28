@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import '../home.dart';
@@ -48,7 +47,7 @@ Future<bool> detecterLocalisation(BuildContext context, double Lat, double Lon, 
     return estAuBonEndroit=false;
   }
 }
-
+//AgcT7TBFJS
 Future<void> sendCheckInRequest() async {
   // Récupérer le token depuis SharedPreferences
   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -65,7 +64,7 @@ Future<void> sendCheckInRequest() async {
     // En-têtes de la requête avec le token JWT
     final Map<String, String> headers = {
       'Accept': 'application/json',
-      'Content-type': 'application/json',
+      //'Content-type': 'application/json',
       'Authorization': 'Bearer $token',
     };
 
@@ -77,7 +76,7 @@ Future<void> sendCheckInRequest() async {
       );
 
       // Gérer la réponse
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Succès de la requête
         print('Request successful: ${response.body}');
       } else {
@@ -103,9 +102,10 @@ Future<void> sendCheckOutRequest() async {
   if (token != null) {
     // URL de l'endpoint pour la requête POST
     const String apiUrl = 'http://10.0.2.2:8000/api/employe/checkOut';
-    final Map<String, dynamic> body = {
-    };
 
+    final Map<String, dynamic> body = {
+      'statut': 'checkOut',
+    };
     // En-têtes de la requête avec le token JWT
     final Map<String, String> headers = {
       'Accept': 'application/json',
@@ -114,7 +114,7 @@ Future<void> sendCheckOutRequest() async {
     };
 
     try {
-      final response = await http.post(
+      final response = await http.put(
         Uri.parse(apiUrl),
         headers: headers,
         body: jsonEncode(body),
@@ -123,10 +123,11 @@ Future<void> sendCheckOutRequest() async {
       print("avant checkout");
 
       // Gérer la réponse
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200|| response.statusCode == 201) {
         // Succès de la requête
         print('Request successful: ${response.body}');
-      } else {
+      }
+      else {
         // Gérer les erreurs de la requête
         print('Failed to send request: ${response.statusCode}');
       }
@@ -162,7 +163,7 @@ Future<void> sendEmergencyCheckOutRequest() async {
     };
 
     try {
-      final response = await http.post(
+      final response = await http.put(
         Uri.parse(apiUrl),
         headers: headers,
         body: jsonEncode(body),
@@ -170,17 +171,21 @@ Future<void> sendEmergencyCheckOutRequest() async {
 print("emergency checkout");
 
       // Gérer la réponse
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         // Succès de la requête
         print('Request successful: ${response.body}');
+      } else if (response.statusCode == 400) {
+        // Erreur de la requête
+        print('Vous avez déjà fait le checkOut');
       } else {
-        // Gérer les erreurs de la requête
+        // Autres erreurs de la requête
         print('Failed to send request: ${response.statusCode}');
       }
     } catch (e) {
       // Gérer les erreurs de connexion
       print('Failed to send request: $e');
     }
+
   } else {
     // Gérer le cas où le token n'est pas trouvé dans SharedPreferences
     print('Token not found in SharedPreferences');

@@ -1,12 +1,10 @@
 import 'package:algerie_telecom_pointage/screens/profile_editing.dart';
 import 'package:flutter/material.dart';
-import 'package:algerie_telecom_pointage/screens/profile_settings.dart';
 import 'package:algerie_telecom_pointage/screens/profile.dart';
 import 'package:algerie_telecom_pointage/screens/login.dart';
 import 'screens/notifications.dart';
 import 'screens/home.dart';
-import 'package:algerie_telecom_pointage/Screens/historique/database_helper.dart';
-import 'package:algerie_telecom_pointage/Screens/historique/historique.dart';
+
 
 
 void main() {

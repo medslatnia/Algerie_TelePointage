@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:algerie_telecom_pointage/screens/windows/checkout.dart';
 import 'package:algerie_telecom_pointage/screens/windows/noncheckin.dart';
@@ -17,6 +19,8 @@ import 'services/localiser.dart';
 import 'services/api_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 final ApiService apiService = ApiService();
 List<Map<String, dynamic>> historique = [];
@@ -24,6 +28,15 @@ DateTime? heureEntree;
 DateTime? heureSortie;
 bool enregistrementEffectue = false;
 bool sortieEffectue = false;
+
+String dates = "";
+String check_in = "";
+String check_out = "";
+String statut = "";
+int NombrePointages = 0;
+
+String check_in_hour = "";
+String check_out_hour = "";
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -36,11 +49,14 @@ class HomeScreenState extends State<HomeScreen> {
   late SharedPreferences _prefs;
   late String _matricule;
 
+
+
   @override
   void initState() {
     super.initState();
     _initSharedPreferences();
     resetStatesAtMidnight();
+    fetchHistorique();
   }
 
   void _initSharedPreferences() async {
@@ -60,6 +76,63 @@ class HomeScreenState extends State<HomeScreen> {
       });
       resetStatesAtMidnight(); // Réinitialiser à minuit chaque jour
     });
+  }
+
+
+
+  Future<void> fetchHistorique() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('jwt_token');
+    print("cc");
+     String dateHistorique = (DateTime.now().year.toString()) + "-" + (DateTime.now().month >=10 ?  DateTime.now().month.toString() :("0"+ DateTime.now().month.toString()));
+    print("date to send $dateHistorique");
+
+    if (token == null) {
+      print("le token est vide");
+      return;
+    }
+
+     String apiUrl = "http://10.0.2.2:8000/api/employe/getPointing?date=$dateHistorique";
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+      if (response.statusCode == 200) {
+        print('inside 200');
+        final data = jsonDecode(response.body);
+        if (data['pointings'] != null && data['pointings'].length > 0) {
+          setState(() {
+            NombrePointages =data['pointings'].length;
+            for(int i=0; i<data['pointings'].length; i++) {
+              historique.add(data['pointings'][i]);
+            }
+            print("historique length =");
+            print(historique.length);
+            //todo
+            //dates = data['pointings'][0]['date'] ?? "date vide";
+           // check_in = data['pointings'][0]['check_in'] ?? "";
+            //check_out = data['pointings'][0]['check_out'] ?? "";
+            //statut = data['pointings'][0]['statut'] ?? "";
+            ///print("after all");
+            //String tests  = check_in.substring(0,5);
+            //print("after 200 $check_out");
+            //check_in_hour  = check_in.substring(0,5);
+            //check_out_hour  = check_out.substring(0,5);
+            //print("after 200 $tests");
+          });
+        }
+      } else {
+        // Gérer l'erreur
+        print('Erreur lors de la récupération de l\'historique: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Gérer les erreurs de connexion
+      print('Failed to send request: $e');
+    }
   }
 
 
@@ -125,12 +198,15 @@ class HomeScreenState extends State<HomeScreen> {
                               await Future.delayed(Duration(seconds: 1));
                               if (estAuBonEndroit == true) {
                                 sendCheckInRequest();
-                                heureEntree = DateTime.now();
-                                historique.add({
-                                  'date': DateTime.now(),
-                                  'heureEntree': heureEntree,
-                                  'heureSortie': null,
-                                });
+                                // todo
+                               // print('Historique: $dates et $check_in et $check_out et $statut');
+                                // todo
+                                //heureEntree = DateTime.now();
+                                //historique.add({
+                                  //'date': dates,
+                                  //'heureEntree': check_in,
+                                  //'heureSortie': null,
+                                //});
                                 // Enregistrer l'heure d'entrée
                                 //apiService.enregistrerHeureEntree(_matricule, heureEntree!);
                                 setState(() {
@@ -264,19 +340,42 @@ class HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: historique.length,
-                itemBuilder: (context, index) {
-                  final reversedIndex = historique.length - 1 - index;
-                  final date = historique[reversedIndex]['date'];
-                  final entree = historique[reversedIndex]['heureEntree'];
-                  final sortie = historique[reversedIndex]['heureSortie'];
+                itemCount: NombrePointages,
 
+                itemBuilder: (context, index) {
+                  print("nombre $NombrePointages");
+                  print("index $index");
+                  // final reversedIndex = NombrePointages - 1 - index;
+                  print(historique.length);
+                  dates = historique[index]['date'] ?? "";
+                  check_in = historique[index]['check_in'] ?? "";
+                  check_out = historique[index]['check_out'] ?? "";
+                 // todo nettoyage des variables
+                  String date = dates;
+                  String entree = check_in;
+                  entree = entree!= "" ? entree.substring(0,2): "";
+                  print('entree = $entree et check_in = $check_in  or $check_in_hour');
+                  print("check_out $check_out");
+                  String sortie = check_out;
+                  sortie = sortie!= "" ? sortie.substring(0,2):"";
+                  print('sortie = $sortie and check_out = $check_out or $check_out_hour');
+                  print("checkin justbefore hour $check_in");
+                  check_in_hour = check_in;
+                  print('check_in_hour before substring $check_in_hour');
+                  check_in_hour = check_in!="" ? check_in.substring(0,5): "";
+                  print("check_in_hour after substring $check_in_hour");
+                  check_out_hour = check_out;
+                  check_out_hour = check_out!="" ? check_out.substring(0,5): "";
                   // Conditions pour l'icône d'erreur
                   bool isErreur = false;
-                  if (entree != null && entree.hour > 8) {
+                  bool isInProgress = false;
+                  if (entree != "" && int.parse(entree) > 8) {
                     isErreur = true;
-                  } else if (sortie != null && sortie.hour < 16) {
+                  } else if (sortie != "" && int.parse(sortie) < 16) {
                     isErreur = true;
+                  }
+                  if(int.parse(entree) <= 8 && sortie == "" ) {
+                    isInProgress = true;
                   }
 
                   return Container(
@@ -287,29 +386,29 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                     child: ListTile(
                       leading: Icon(
-                        isErreur
+                        isErreur == true
                             ? Icons.error
-                            : sortie != null
-                            ? Icons.check_circle
-                            : Icons.access_time,
-                        color: isErreur
+                            : isInProgress == true
+                            ? Icons.access_time
+                            : Icons.check_circle,
+                        color: isErreur == true
                             ? Colors.red
-                            : sortie != null
-                            ? Colors.green
-                            : Colors.orange,
+                            : isInProgress == true
+                            ? Colors.orange
+                            : Colors.green,
                       ),
                       title: Text(
-                        'Date: ${date.toLocal().toIso8601String().split('T').first}',
+                        'Date: $date',
                       ),
                       subtitle: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Entrée: ${entree.toLocal().toIso8601String().split('T').last.substring(0, 5)}',
+                            'Entrée: $check_in_hour',
                           ),
-                          sortie != null
+                          sortie != ""
                               ? Text(
-                            'Sortie: ${sortie.toLocal().toIso8601String().split('T').last.substring(0, 5)}',
+                            'Sortie: $check_out_hour',
                           )
                               : Text('Sortie: Non enregistré'),
                         ],

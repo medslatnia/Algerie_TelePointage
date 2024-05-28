@@ -94,10 +94,10 @@ class _QuitterannulerState extends State<Quitterannuler> {
                 await Future.delayed(Duration(seconds: 1));
                 if (estAuBonEndroit && historique.isNotEmpty) {
 
-                  DateTime heureSortie = DateTime.now();
+                  String heureSortie = check_out;
                   historique[historique.length - 1]['heureSortie'] = heureSortie;
-
-                  if (heureSortie.hour < 16) {
+                  int heureSortieOnly  = int.parse(check_in.substring(0,2)) ;
+                  if (heureSortieOnly < 16) {
                     sendEmergencyCheckOutRequest();
                   }
                   else {

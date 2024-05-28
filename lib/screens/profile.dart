@@ -14,10 +14,10 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
-  late String name = "";
-  late String matricule = "";
-  late String phoneNumber = "";
-  late String email = "";
+  String name = "";
+  String matricule = "";
+  String phone = "";
+  String email = "";
 
   @override
   void initState() {
@@ -25,27 +25,46 @@ class ProfileScreenState extends State<ProfileScreen> {
     fetchProfile();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    fetchProfile(); // Rafraîchit le profil chaque fois que les dépendances changent
+  }
+
   Future<void> fetchProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final savedMatricule = prefs.getString('matricule');
-    if (savedMatricule == null) {
-      
+    final String? token = prefs.getString('jwt_token');
+
+    if (token == null) {
+      print("le token est vide");
       return;
     }
-    final response = await http.get(
-      Uri.parse('https://yourapiurl.com/api/profile?matricule=$savedMatricule'),
-    );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        name = data['name'];
-        matricule = savedMatricule; // Use the saved matricule
-        phoneNumber = data['phone_number'];
-        email = data['email'];
-      });
-    } else {
-      // Handle error
+    const String apiUrl = 'http://10.0.2.2:8000/api/employe/getInfoEmploye';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          name = data['name'] ?? "";
+          matricule = data['matricule'] ?? "";
+          email = data['email'] ?? "";
+          phone = data['phone'] ?? "";
+        });
+      } else {
+        // Gérer l'erreur
+        print('Erreur lors de la récupération du profil: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Gérer les erreurs de connexion
+      print('Failed to send request: $e');
     }
   }
 
@@ -127,7 +146,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               buildTextField("Nom", name),
               buildTextField("Matricule", matricule),
-              buildTextField("Numéro de Téléphone", phoneNumber),
+              buildTextField("Numéro de Téléphone", phone),
               buildTextField("Email", email),
               ElevatedButton(
                 onPressed: () {
