@@ -66,14 +66,10 @@ class LoginScreenState extends State<LoginScreen> {
 
       try {
         final result = await _authService.login(matricule, password);
-        print('Login successful: $result');
+        print('Login successful');
 
         // Enregistrement du matricule dans SharedPreferences
-
         await setMatricule(matricule);
-          print('matricule qui a été set : $_matricule');
-
-
 
         Navigator.push(
           context,

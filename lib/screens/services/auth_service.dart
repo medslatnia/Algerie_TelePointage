@@ -32,7 +32,7 @@ class AuthService {
         // Stocker le token dans SharedPreferences
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token);
-        log("le token a été enregistré dans SharedPreferences");
+
 
         // Retourner les données de la réponse
         return responseData;
