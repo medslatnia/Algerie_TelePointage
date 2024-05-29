@@ -38,6 +38,115 @@ int NombrePointages = 0;
 String check_in_hour = "";
 String check_out_hour = "";
 
+late int pointage_Id = 0;
+
+void showJustificationDialog(BuildContext context, int pointage_id) async {
+  final TextEditingController _controller = TextEditingController();
+
+  await showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Justification'),
+        content: TextField(
+          controller: _controller,
+          decoration: InputDecoration(
+            hintText: 'Merci de bien renseigner le justificatif d\'absence',
+          ),
+        ),
+        actions: <Widget>[
+          ElevatedButton(
+            onPressed: () {
+              String justification = _controller.text.trim();
+              if (justification.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Ce champ est vide',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              } else {
+                print("pointage id before send = $pointage_id");
+                 _sendJustification(context, justification, pointage_id);
+                // Afficher un message d'erreur sous le TextField si la justification est vide
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Color(0xFF00AA5B), // Couleur du texte
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10), // Rayon des coins
+              ),
+            ),
+            child: Text('Envoyer'), // Texte du bouton
+          )
+        ],
+      );
+    },
+  );
+}
+
+
+Future<void> _sendJustification(BuildContext context, String justification, int pointage_Id) async {
+  final url = 'http://10.0.2.2:8000/api/employe/addJustification';
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? token = prefs.getString('jwt_token');
+
+  if (token == null) {
+    print("le token est vide");
+    return;
+  }
+
+  final response = await http.post(
+    Uri.parse(url),
+    headers: <String, String>{
+      'Accept': 'application/json',
+      'Content-Type': 'application/json; charset=UTF-8',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      'pointing_id': pointage_Id,
+      'text': justification,
+    }),
+  );
+print("pointage_Id $pointage_Id");
+  print("justification $justification");
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    _showConfirmationDialog(context, 'Justification envoyée avec succès');
+  }
+   else if (response.statusCode == 400) {
+    _showConfirmationDialog(context, 'Justificatif existe déjà !');
+  }
+  else {
+    print(response.statusCode);
+    _showConfirmationDialog(context, 'Échec de l\'envoi de la justification');
+  }
+}
+
+void _showConfirmationDialog(BuildContext context, String message) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Notification'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
 class HomeScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -83,9 +192,9 @@ class HomeScreenState extends State<HomeScreen> {
   Future<void> fetchHistorique() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? token = prefs.getString('jwt_token');
-    print("cc");
+
      String dateHistorique = (DateTime.now().year.toString()) + "-" + (DateTime.now().month >=10 ?  DateTime.now().month.toString() :("0"+ DateTime.now().month.toString()));
-    print("date to send $dateHistorique");
+
 
     if (token == null) {
       print("le token est vide");
@@ -102,7 +211,6 @@ class HomeScreenState extends State<HomeScreen> {
         },
       );
       if (response.statusCode == 200) {
-        print('inside 200');
         final data = jsonDecode(response.body);
         if (data['pointings'] != null && data['pointings'].length > 0) {
           setState(() {
@@ -110,19 +218,7 @@ class HomeScreenState extends State<HomeScreen> {
             for(int i=0; i<data['pointings'].length; i++) {
               historique.add(data['pointings'][i]);
             }
-            print("historique length =");
-            print(historique.length);
-            //todo
-            //dates = data['pointings'][0]['date'] ?? "date vide";
-           // check_in = data['pointings'][0]['check_in'] ?? "";
-            //check_out = data['pointings'][0]['check_out'] ?? "";
-            //statut = data['pointings'][0]['statut'] ?? "";
-            ///print("after all");
-            //String tests  = check_in.substring(0,5);
-            //print("after 200 $check_out");
-            //check_in_hour  = check_in.substring(0,5);
-            //check_out_hour  = check_out.substring(0,5);
-            //print("after 200 $tests");
+
           });
         }
       } else {
@@ -198,26 +294,18 @@ class HomeScreenState extends State<HomeScreen> {
                               await Future.delayed(Duration(seconds: 1));
                               if (estAuBonEndroit == true) {
                                 sendCheckInRequest();
-                                // todo
-                               // print('Historique: $dates et $check_in et $check_out et $statut');
-                                // todo
-                                //heureEntree = DateTime.now();
-                                //historique.add({
-                                  //'date': dates,
-                                  //'heureEntree': check_in,
-                                  //'heureSortie': null,
-                                //});
-                                // Enregistrer l'heure d'entrée
-                                //apiService.enregistrerHeureEntree(_matricule, heureEntree!);
+
                                 setState(() {
                                   enregistrementEffectue = true;
                                 });
-                                await showDialog(
+                                await
+                                 showDialog(
                                   context: context,
                                   builder: (context) => checkin(),
                                 );
                               } else {
-                                await showDialog(
+                                await
+                                 showDialog(
                                   context: context,
                                   builder: (context) => noncheckin(),
                                 );
@@ -307,65 +395,109 @@ class HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
+
                   ],
                 ),
+
               ),
+
             ),
             Container(
-                padding: EdgeInsets.symmetric(vertical: 0),
-                // Définir les marges en haut et en bas
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.dehaze, size: 38, color: Colors.black),
-                      onPressed: () async {
-                        final moisSelectionne = await showDialog(
-                          context: context,
-                          builder: (context) => MoisSelectorDialog(),
-                        );
-                        print("Mois sélectionné : $moisSelectionne");
-                      },
+              padding: EdgeInsets.symmetric(vertical: 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "Historique",
+                    style: TextStyle(
+                      fontSize:23,
+                      color: Colors.black,
                     ),
-                    SizedBox(width: 2),
-                    Text(
-                      "Historique",
-                      style: TextStyle(
-                        fontSize:23,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                )),
+                  ),
+                  SizedBox(width: 200),
+                  IconButton(
+                    icon: Icon(Icons.description, size: 30, color: Colors.black),
+                    onPressed: () async {
+                      final TextEditingController _controller = TextEditingController();
+
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Justification'),
+                            content: TextField(
+                              controller: _controller,
+                              decoration: InputDecoration(
+                                hintText: 'Saisissez la date et la justification d\'absence',
+                              ),
+                            ),
+                            actions: <Widget>[
+                              ElevatedButton(
+                                onPressed: () {
+                                  String justification = _controller.text.trim();
+                                  if (justification.isEmpty){
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Ce champ est vide',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }else {
+                                    _sendJustification(context, justification, pointage_Id);
+                                    // Afficher un message d'erreur sous le TextField si la justification est vide
+                                  }
+
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: Colors.white, backgroundColor: Color(0xFF00AA5B), // Couleur du texte
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10), // Rayon des coins
+                                  ),
+                                ),
+                                child: Text('Envoyer'), // Texte du bouton
+                              )
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: NombrePointages,
 
                 itemBuilder: (context, index) {
-                  print("nombre $NombrePointages");
-                  print("index $index");
-                  // final reversedIndex = NombrePointages - 1 - index;
-                  print(historique.length);
-                  dates = historique[index]['date'] ?? "";
-                  check_in = historique[index]['check_in'] ?? "";
-                  check_out = historique[index]['check_out'] ?? "";
-                 // todo nettoyage des variables
+
+                  final reversedIndex = NombrePointages - 1 - index;
+
+                  dates = historique[reversedIndex]['date'] ?? "";
+                  check_in = historique[reversedIndex]['check_in'] ?? "";
+                  check_out = historique[reversedIndex]['check_out'] ?? "";
+                   //pointage_Id =historique[reversedIndex]['pointing_id'] ?? "";
+
+
                   String date = dates;
                   String entree = check_in;
                   entree = entree!= "" ? entree.substring(0,2): "";
-                  print('entree = $entree et check_in = $check_in  or $check_in_hour');
-                  print("check_out $check_out");
+
                   String sortie = check_out;
                   sortie = sortie!= "" ? sortie.substring(0,2):"";
-                  print('sortie = $sortie and check_out = $check_out or $check_out_hour');
-                  print("checkin justbefore hour $check_in");
+
                   check_in_hour = check_in;
-                  print('check_in_hour before substring $check_in_hour');
+
                   check_in_hour = check_in!="" ? check_in.substring(0,5): "";
-                  print("check_in_hour after substring $check_in_hour");
+
                   check_out_hour = check_out;
                   check_out_hour = check_out!="" ? check_out.substring(0,5): "";
+
                   // Conditions pour l'icône d'erreur
                   bool isErreur = false;
                   bool isInProgress = false;
@@ -385,17 +517,29 @@ class HomeScreenState extends State<HomeScreen> {
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: ListTile(
-                      leading: Icon(
-                        isErreur == true
-                            ? Icons.error
-                            : isInProgress == true
-                            ? Icons.access_time
-                            : Icons.check_circle,
-                        color: isErreur == true
-                            ? Colors.red
-                            : isInProgress == true
-                            ? Colors.orange
-                            : Colors.green,
+
+                      leading: GestureDetector(
+                        onTap: () {
+                          // Action à effectuer lorsque l'icône est cliquée
+                          if (isErreur) {
+                            int i = NombrePointages - 1 - index;
+                            pointage_Id = historique[i]['pointing_id'] ?? -1 ;
+                           print('id = $pointage_Id');
+                            showJustificationDialog(context, pointage_Id);
+                          }
+                        },
+                        child: Icon(
+                          isErreur == true
+                              ? Icons.error
+                              : isInProgress == true
+                              ? Icons.access_time
+                              : Icons.check_circle,
+                          color: isErreur == true
+                              ? Colors.red
+                              : isInProgress == true
+                              ? Colors.orange
+                              : Colors.green,
+                        ),
                       ),
                       title: Text(
                         'Date: $date',
@@ -418,9 +562,13 @@ class HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+
           ],
+
         ),
       ),
+
     );
   }
 }
+
