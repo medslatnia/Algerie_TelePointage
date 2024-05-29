@@ -32,18 +32,18 @@ Future<bool> detecterLocalisation(BuildContext context, double Lat, double Lon, 
   double latitude = position.latitude;
   double longitude = position.longitude;
 
-  print('Latitude requise: ($minLat - $maxLat), Longitude requise: ($minLat - $maxLat)');
+  print('Latitude requise: ($minLat - $maxLat), Longitude requise: ($minLon - $maxLon)');
   print('Latitude actuelle: $latitude, Longitude actuelle: $longitude');
 
   if (latitude >= minLat && latitude <= maxLat &&
       longitude >= minLon && longitude <= maxLon) {
     // Effectuer une action lorsque l'utilisateur est au bon endroit
-    print('L\'utilisateur est au bon endroit.');
+    print('L\'utilisateur est au bon emplacement.');
     return estAuBonEndroit= true;
 
   } else {
     // Effectuer une action lorsque l'utilisateur n'est pas au bon endroit
-    print('L\'utilisateur n\'est pas au bon endroit.');
+    print('L\'utilisateur n\'est pas au bon emplacement.');
     return estAuBonEndroit=false;
   }
 }
@@ -52,7 +52,7 @@ Future<void> sendCheckInRequest() async {
   // Récupérer le token depuis SharedPreferences
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('jwt_token');
-  print('token récupéré dans localiser : $token');
+
 
   if (token != null) {
     // URL de l'endpoint pour la requête POST
@@ -79,7 +79,11 @@ Future<void> sendCheckInRequest() async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Succès de la requête
         print('Request successful: ${response.body}');
-      } else {
+      }else if (response.statusCode == 400){
+        // Gérer les erreurs de la requête
+        print('Vous vous êtes déjà enregistrés aujourd\'hui !');
+      }
+      else {
         // Gérer les erreurs de la requête
         print('Failed to send request: ${response.statusCode}');
       }
@@ -120,12 +124,13 @@ Future<void> sendCheckOutRequest() async {
         body: jsonEncode(body),
       );
 
-      print("avant checkout");
-
       // Gérer la réponse
       if (response.statusCode == 200|| response.statusCode == 201) {
         // Succès de la requête
         print('Request successful: ${response.body}');
+      } else if(response.statusCode == 400)
+      {
+        print('Vous êtes déjà sortis !');
       }
       else {
         // Gérer les erreurs de la requête
@@ -145,7 +150,7 @@ Future<void> sendEmergencyCheckOutRequest() async {
   // Récupérer le token depuis SharedPreferences
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   final String? token = prefs.getString('jwt_token');
-  print('$token');
+
 
   if (token != null) {
     // URL de l'endpoint pour la requête POST
@@ -168,7 +173,7 @@ Future<void> sendEmergencyCheckOutRequest() async {
         headers: headers,
         body: jsonEncode(body),
       );
-print("emergency checkout");
+
 
       // Gérer la réponse
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -176,7 +181,7 @@ print("emergency checkout");
         print('Request successful: ${response.body}');
       } else if (response.statusCode == 400) {
         // Erreur de la requête
-        print('Vous avez déjà fait le checkOut');
+        print('Vous êtes déjà sortis !');
       } else {
         // Autres erreurs de la requête
         print('Failed to send request: ${response.statusCode}');

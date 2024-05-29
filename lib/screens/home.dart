@@ -48,12 +48,16 @@ void showJustificationDialog(BuildContext context, int pointage_id) async {
     builder: (BuildContext context) {
       return AlertDialog(
         title: Text('Justification'),
-        content: TextField(
-          controller: _controller,
-          decoration: InputDecoration(
-            hintText: 'Merci de bien renseigner le justificatif d\'absence',
+        content: Container(
+          height: 20, // Ou toute autre hauteur appropriée
+          child: TextField(
+            controller: _controller,
+            decoration: InputDecoration(
+              hintText: 'Merci de bien renseigner le justificatif d\'absence',
+            ),
           ),
         ),
+
         actions: <Widget>[
           ElevatedButton(
             onPressed: () {
@@ -68,10 +72,6 @@ void showJustificationDialog(BuildContext context, int pointage_id) async {
                     backgroundColor: Colors.red,
                   ),
                 );
-              } else {
-                print("pointage id before send = $pointage_id");
-                 _sendJustification(context, justification, pointage_id);
-                // Afficher un message d'erreur sous le TextField si la justification est vide
               }
             },
             style: ElevatedButton.styleFrom(
@@ -113,8 +113,8 @@ Future<void> _sendJustification(BuildContext context, String justification, int 
       'text': justification,
     }),
   );
-print("pointage_Id $pointage_Id");
-  print("justification $justification");
+
+
   if (response.statusCode == 200 || response.statusCode == 201) {
     _showConfirmationDialog(context, 'Justification envoyée avec succès');
   }
@@ -266,7 +266,7 @@ class HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: Container(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 150),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 80),
         child: Column(
           children: [
             Container(
@@ -414,57 +414,7 @@ class HomeScreenState extends State<HomeScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  SizedBox(width: 200),
-                  IconButton(
-                    icon: Icon(Icons.description, size: 30, color: Colors.black),
-                    onPressed: () async {
-                      final TextEditingController _controller = TextEditingController();
 
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Justification'),
-                            content: TextField(
-                              controller: _controller,
-                              decoration: InputDecoration(
-                                hintText: 'Saisissez la date et la justification d\'absence',
-                              ),
-                            ),
-                            actions: <Widget>[
-                              ElevatedButton(
-                                onPressed: () {
-                                  String justification = _controller.text.trim();
-                                  if (justification.isEmpty){
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Ce champ est vide',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }else {
-                                    _sendJustification(context, justification, pointage_Id);
-                                    // Afficher un message d'erreur sous le TextField si la justification est vide
-                                  }
-
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white, backgroundColor: Color(0xFF00AA5B), // Couleur du texte
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10), // Rayon des coins
-                                  ),
-                                ),
-                                child: Text('Envoyer'), // Texte du bouton
-                              )
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
@@ -481,7 +431,7 @@ class HomeScreenState extends State<HomeScreen> {
                   dates = historique[reversedIndex]['date'] ?? "";
                   check_in = historique[reversedIndex]['check_in'] ?? "";
                   check_out = historique[reversedIndex]['check_out'] ?? "";
-                   //pointage_Id =historique[reversedIndex]['pointing_id'] ?? "";
+
 
 
                   String date = dates;
@@ -524,7 +474,7 @@ class HomeScreenState extends State<HomeScreen> {
                           if (isErreur) {
                             int i = NombrePointages - 1 - index;
                             pointage_Id = historique[i]['pointing_id'] ?? -1 ;
-                           print('id = $pointage_Id');
+
                             showJustificationDialog(context, pointage_Id);
                           }
                         },

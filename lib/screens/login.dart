@@ -37,7 +37,6 @@ class LoginScreenState extends State<LoginScreen> {
   // Function to load matricule from SharedPreferences
   void getMatricule() async {
      _prefs = await SharedPreferences.getInstance();
-    //SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _matricule = _prefs.getString('matricule') ?? '';
     });
@@ -47,7 +46,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   // Function to save matricule to SharedPreferences
   Future<void> setMatricule(String matricule) async {
-    print('avant tout $matricule');
+
    //final SharedPreferences prefs = await SharedPreferences.getInstance();
      _prefs = await SharedPreferences.getInstance();
 
@@ -55,7 +54,7 @@ class LoginScreenState extends State<LoginScreen> {
     setState(() {
       _prefs.setString('matricule', matricule);
       _matricule = matricule;
-      print('nous avons set ce matricule : $_matricule');
+
     });
 
   }

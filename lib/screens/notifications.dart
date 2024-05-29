@@ -40,7 +40,6 @@ class NotificationsScreenState extends State<NotificationsScreen> {
 
       if (response.statusCode == 200) {
         // Succès de la requête
-        print('Request successful: ${response.body}');
         final data = jsonDecode(response.body);
 
         setState(() {
