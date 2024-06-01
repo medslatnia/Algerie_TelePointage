@@ -4,6 +4,8 @@ import '../home.dart';
 import 'checkout.dart';
 import 'noncheckout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'DejaEffectue.dart';
+
 
 bool isSortieEffectue() {
   return sortieEffectue;
@@ -92,28 +94,40 @@ class _QuitterannulerState extends State<Quitterannuler> {
               onPressed: () async {
                 detecterLocalisation(context, LAT, LON, tolerance);
                 await Future.delayed(Duration(seconds: 1));
-                if (estAuBonEndroit && historique.isNotEmpty) {
+                if (estAuBonEndroit && historique.isNotEmpty && estDejaSorti == false) {
 
                   String heureSortie = check_out;
                   historique[historique.length - 1]['heureSortie'] = heureSortie;
                   int heureSortieOnly  = int.parse(check_in.substring(0,2)) ;
                   if (heureSortieOnly < 16) {
                     sendEmergencyCheckOutRequest();
+                    bool sortieEffectue = true;
                   }
+
+
                   else {
                     sendCheckOutRequest();
+                    setState(() {
+                      bool sortieEffectue = true;
+                    });
                   }
 
                   //await apiService.enregistrerHeureSortie(_matricule, heureSortie, Emergency);
-                  setState(() {
-                    bool sortieEffectue = true;
-                  });
+
 
                   await showDialog(
                     context: context,
                     builder: (context) => checkout(),
                   );
-                } else {
+                }
+                else if(estDejaSorti == true){
+                  await showDialog(
+                    context: context,
+                    builder: (context) =>
+                        DejaEffectue(), // Affichez le dialogue de quitterannuler
+                  );
+                }
+                else {
                   await showDialog(
                     context: context,
                     builder: (context) =>

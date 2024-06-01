@@ -35,6 +35,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
         Uri.parse(apiUrl),
         headers: {
           'Authorization': 'Bearer $token',
+
         },
       );
 

@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 bool estAuBonEndroit = false;
+bool estDejaEnregistre = false;
+bool estDejaSorti = false;
 
 const double LAT = 37.4219983;
 const double LON = -122.084;
@@ -79,9 +81,13 @@ Future<void> sendCheckInRequest() async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Succès de la requête
         print('Request successful: ${response.body}');
+         estDejaEnregistre = false;
+
       }else if (response.statusCode == 400){
         // Gérer les erreurs de la requête
         print('Vous vous êtes déjà enregistrés aujourd\'hui !');
+         estDejaEnregistre = true;
+
       }
       else {
         // Gérer les erreurs de la requête
@@ -131,6 +137,7 @@ Future<void> sendCheckOutRequest() async {
       } else if(response.statusCode == 400)
       {
         print('Vous êtes déjà sortis !');
+         estDejaSorti = true;
       }
       else {
         // Gérer les erreurs de la requête
@@ -179,9 +186,11 @@ Future<void> sendEmergencyCheckOutRequest() async {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Succès de la requête
         print('Request successful: ${response.body}');
+         estDejaSorti = false;
       } else if (response.statusCode == 400) {
         // Erreur de la requête
         print('Vous êtes déjà sortis !');
+         estDejaSorti = true;
       } else {
         // Autres erreurs de la requête
         print('Failed to send request: ${response.statusCode}');

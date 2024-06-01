@@ -78,7 +78,9 @@ class LoginScreenState extends State<LoginScreen> {
       } catch (error) {
         print('Login failed: $error');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: $error')),
+          SnackBar(
+            content: Text('Le matricule ou le mot de passe est faux'),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -204,54 +206,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               Container(width: _minimumPadding * 5),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          print("Forgot Password? button pressed");
-                        },
-                        child: Text(
-                          'Mot de passe oublié?',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF2556A2),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 25.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Un problème?"),
-                        TextButton(
-                          onPressed: () {
-                            // Handle button press
-                          },
-                          child: Text(
-                            'Contactez-nous',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xFF2556A2),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+
             ],
           ),
         ),

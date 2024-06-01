@@ -43,6 +43,8 @@ class ProfileEditingScreenState extends State<ProfileEditingScreen> {
         Uri.parse(apiUrl),
         headers: {
           'Authorization': 'Bearer $token',
+          'Accept': 'application/json',
+          'Content-type': 'application/json',
         },
       );
 
@@ -53,6 +55,8 @@ class ProfileEditingScreenState extends State<ProfileEditingScreen> {
           matricule = data['matricule'] ?? "";
           email = data['email'] ?? "";
           phone = data['phone'] ?? "";
+
+          fetchProfile();
         });
       } else {
         // Gérer l'erreur
@@ -69,29 +73,52 @@ class ProfileEditingScreenState extends State<ProfileEditingScreen> {
     final updatedPhoneNumber = phoneController.text;
     final updatedPassword = passwordController.text;
 
-    if (updatedEmail.isNotEmpty || updatedPhoneNumber.isNotEmpty || updatedPassword.isNotEmpty) {
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:8000/api/employe/updateProfile'),
-        body: {
-          'matricule': matricule,
-          if (updatedEmail.isNotEmpty) 'email': updatedEmail,
-          if (updatedPhoneNumber.isNotEmpty) 'phone_number': updatedPhoneNumber,
-          if (updatedPassword.isNotEmpty) 'password': updatedPassword,
-        },
-      );
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('jwt_token');
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Profil mis à jour avec succès'),
-            backgroundColor: Colors.green,
-          ),
+    if (token == null) {
+      print("le token est vide");
+      return;
+    }
+
+    // Construire les données à envoyer
+    Map<String, dynamic> updatedData = {};
+    if (updatedEmail.isNotEmpty) updatedData['newEmail'] = updatedEmail;
+    if (updatedPhoneNumber.isNotEmpty) updatedData['newPhone'] = updatedPhoneNumber;
+    if (updatedPassword.isNotEmpty) updatedData['newPassword'] = updatedPassword;
+
+    if (updatedData.isNotEmpty) {
+      try {
+        final response = await http.put(
+          Uri.parse('http://10.0.2.2:8000/api/updateSelfAccount'),
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode(updatedData),  // Convertir le Map en JSON
         );
-        fetchProfile();
-      } else {
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Profil mis à jour avec succès'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          fetchProfile(); // Réinitialiser le profil après la mise à jour
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Échec de la mise à jour du profil'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        print('Erreur: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Échec de la mise à jour du profil'),
+            content: Text('Erreur de connexion'),
             backgroundColor: Colors.red,
           ),
         );
@@ -105,6 +132,7 @@ class ProfileEditingScreenState extends State<ProfileEditingScreen> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -291,8 +291,8 @@ class HomeScreenState extends State<HomeScreen> {
                             color: Color.fromARGB(255, 33, 143, 36),
                             onPressed: !enregistrementEffectue ? () async {
                               detecterLocalisation(context, LAT, LON, tolerance);
-                              await Future.delayed(Duration(seconds: 1));
-                              if (estAuBonEndroit == true) {
+                              await Future.delayed(Duration(seconds: 2));
+                              if (estAuBonEndroit == true && estDejaEnregistre == false) {
                                 sendCheckInRequest();
 
                                 setState(() {
@@ -304,10 +304,16 @@ class HomeScreenState extends State<HomeScreen> {
                                   builder: (context) => checkin(),
                                 );
                               } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Vous vous êtes déjà enregistré'),
+                                        backgroundColor: Colors.red),
+                                );
                                 await
                                  showDialog(
                                   context: context,
                                   builder: (context) => noncheckin(),
+
                                 );
                               }
                             } : null,
@@ -361,8 +367,7 @@ class HomeScreenState extends State<HomeScreen> {
                                 context: context,
                                 builder: (context) => Quitterannuler(),
                               );
-                              if(isSortieEffectue()){sortieEffectue = true;}
-                              //faire qlq chose avec quitternon
+                              if(isSortieEffectue()){print("ici");}
                             } : null,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
