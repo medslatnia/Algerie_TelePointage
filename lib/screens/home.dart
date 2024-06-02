@@ -49,12 +49,13 @@ void showJustificationDialog(BuildContext context, int pointage_id) async {
       return AlertDialog(
         title: Text('Justification'),
         content: Container(
-          height: 20, // Ou toute autre hauteur appropriée
+          height: 100, // Ou toute autre hauteur appropriée
           child: TextField(
             controller: _controller,
             decoration: InputDecoration(
-              hintText: 'Merci de bien renseigner le justificatif d\'absence',
+              hintText: 'Merci de bien renseigner le justificatif d\'absence ici',
             ),
+            maxLines: 3,
           ),
         ),
 
@@ -73,6 +74,7 @@ void showJustificationDialog(BuildContext context, int pointage_id) async {
                   ),
                 );
               }
+              else {_sendJustification(context, justification, pointage_Id);}
             },
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -132,11 +134,24 @@ void _showConfirmationDialog(BuildContext context, String message) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Notification'),
-        content: Text(message),
+        title: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green),
+            SizedBox(width: 8),
+            Text('Notification'),
+          ],
+        ),
+        content: Text('$message'),
         actions: <Widget>[
-          TextButton(
+          ElevatedButton(
             child: Text('OK'),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white, // Couleur du texte
+              backgroundColor: Color(0xFF00AA5B), // Couleur de fond
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10), // Rayon des coins
+              ),
+            ),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -306,7 +321,7 @@ class HomeScreenState extends State<HomeScreen> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                        content: Text('Vous vous êtes déjà enregistré'),
+                                        content: Text('Un problème est survenu, veuillez réessayer'),
                                         backgroundColor: Colors.red),
                                 );
                                 await

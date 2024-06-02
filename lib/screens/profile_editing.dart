@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'profile.dart';
 
 class ProfileEditingScreen extends StatefulWidget {
   @override
@@ -146,7 +147,10 @@ class ProfileEditingScreenState extends State<ProfileEditingScreen> {
           icon: Icon(Icons.arrow_back),
           color: Colors.white,
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen()), // Navigue vers la page Home
+            );
           },
         ),
         backgroundColor: Color.fromRGBO(37, 86, 162, 1),
@@ -158,7 +162,7 @@ class ProfileEditingScreenState extends State<ProfileEditingScreen> {
             SizedBox(height: 20),
             buildTextField("Nom", name, true),
             buildTextField("Matricule", matricule, true),
-            buildTextField("Numéro de Téléphone", phone, false, controller: phoneController),
+            //buildTextField("Numéro de Téléphone", phone, false, controller: phoneController),
             buildTextField("Email", email, false, controller: emailController),
             buildPasswordTextField("Mot de passe", password, controller: passwordController),
             SizedBox(height: 20),

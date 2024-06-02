@@ -79,7 +79,7 @@ class LoginScreenState extends State<LoginScreen> {
         print('Login failed: $error');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Le matricule ou le mot de passe est faux'),
+            content: Text('Matricule et mot de passe incorrects. Veuillez réessayer.'),
               backgroundColor: Colors.red),
         );
       }

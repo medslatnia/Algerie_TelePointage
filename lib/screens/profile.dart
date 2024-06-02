@@ -146,13 +146,14 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
               buildTextField("Nom", name),
               buildTextField("Matricule", matricule),
-              buildTextField("Numéro de Téléphone", phone),
+              //buildTextField("Numéro de Téléphone", phone),
               buildTextField("Email", email),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => LoginScreen()),
+                        (Route<dynamic> route) => false,
                   );
                 },
                 child: Text(
